@@ -20,6 +20,23 @@ const UserSchema = new mongoose.Schema({
     enum: ['admin', 'subadmin'],
     default: 'subadmin'
   },
+  city: {
+    type: String,
+    required: true
+  },
+  phone: {
+    type: String,
+    required: true,
+    unique: true // Ensure phone numbers are unique
+  },
+  address: {
+    type: String,
+    required: true
+  },
+  verified: {
+    type: Boolean, // Corrected from 'boolean' to 'Boolean'
+    default: false
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -29,10 +46,11 @@ const UserSchema = new mongoose.Schema({
 // Hash password before saving
 UserSchema.pre('save', async function(next) {
   if (!this.isModified('password')) {
-    next();
+    return next();
   }
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
+  next();
 });
 
 // Method to check if entered password is correct

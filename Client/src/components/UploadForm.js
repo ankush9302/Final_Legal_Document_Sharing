@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Select, Button, Card, Row, Col, message, Spin } from 'antd';
 import axios from 'axios';
-import { shareByEmail, shareByWhatsApp, shareBySMS } from '../services/shareService';
+import { shareByEmail, shareByWhatsApp, shareBySMS, shareAll } from '../services/shareService';
 
 const { Option } = Select;
 
@@ -53,6 +53,24 @@ function UploadForm() {
     }
   };
 
+  const handleShareAll = async () => {
+    if (selectedClients.length === 0) {
+      message.error('Please select at least one client');
+      return;
+    }
+
+    try {
+      for (const clientId of selectedClients) {
+        const client = clientData.find(c => c['CUSTOMER ID'] === clientId);
+        await shareAll(client['CUSTOMER ID'], client.documentLink);
+      }
+      message.success('Documents shared via all channels');
+    } catch (error) {
+      console.error('Error sharing documents via all channels:', error);
+      message.error('Failed to share documents via all channels');
+    }
+  };
+
   return (
     <Spin spinning={loading}>
       <div>
@@ -84,8 +102,11 @@ function UploadForm() {
                   <Button onClick={() => handleShare(shareByWhatsApp, 'WhatsApp')} type="primary" style={{ marginRight: 8 }}>
                     Share by WhatsApp
                   </Button>
-                  <Button onClick={() => handleShare(shareBySMS, 'SMS')} type="primary">
+                  <Button onClick={() => handleShare(shareBySMS, 'SMS')} type="primary" style={{ marginRight: 8 }}>
                     Share by SMS
+                  </Button>
+                  <Button onClick={handleShareAll} type="primary">
+                    Share All
                   </Button>
                 </Form.Item>
               </Form>

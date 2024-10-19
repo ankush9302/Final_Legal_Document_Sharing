@@ -64,6 +64,30 @@ const Register = () => {
             </Select>
           </Form.Item>
 
+          <Form.Item
+            name="city"
+            rules={[{ required: true, message: 'Please input your city!' }]}
+          >
+            <Input placeholder="City" />
+          </Form.Item>
+
+          <Form.Item
+            name="phone"
+            rules={[
+              { required: true, message: 'Please input your phone number!' },
+              { pattern: /^\d{10}$/, message: 'Please enter a valid 10-digit phone number!' },
+            ]}
+          >
+            <Input placeholder="Phone Number" />
+          </Form.Item>
+
+          <Form.Item
+            name="address"
+            rules={[{ required: true, message: 'Please input your address!' }]}
+          >
+            <Input placeholder="Address" />
+          </Form.Item>
+
           <Form.Item>
             <Button type="primary" htmlType="submit" className="register-form-button">
               Register

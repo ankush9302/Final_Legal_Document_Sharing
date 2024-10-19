@@ -13,7 +13,7 @@ const ClientManagement = () => {
   const fetchClientData = async () => {
     try {
       const response = await axios.get('http://localhost:5000/api/document-links');
-      console.log('Raw API response:', response.data); // Log the raw response
+      // console.log('Raw API response:', response.data); // Log the raw response
       setClientData(response.data);
       setLoading(false);
     } catch (error) {

@@ -5,7 +5,7 @@ exports.register = async (req, res) => {
 	console.log('Register function called');
 	console.log('Request body:', req.body);
 	try {
-		const { name, email, password, role } = req.body;
+		const { name, email, password, role, city, phone, address } = req.body;
 
 		// Check if user already exists
 		let user = await User.findOne({ email });
@@ -18,7 +18,11 @@ exports.register = async (req, res) => {
 			name,
 			email,
 			password,
-			role
+			role,
+			city,
+			phone,
+			address,
+			verified: role === 'admin', // Automatically verify admin users
 		});
 
 		await user.save();
@@ -32,7 +36,11 @@ exports.register = async (req, res) => {
 				id: user._id,
 				name: user.name,
 				email: user.email,
-				role: user.role
+				role: user.role,
+				city: user.city,
+				phone: user.phone,
+				address: user.address,
+				verified: user.verified
 			}
 		});
 	} catch (error) {
@@ -66,7 +74,10 @@ exports.login = async (req, res) => {
 				id: user._id,
 				name: user.name,
 				email: user.email,
-				role: user.role
+				role: user.role,
+				city: user.city,
+				phone: user.phone,
+				address: user.address
 			}
 		});
 	} catch (error) {

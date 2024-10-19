@@ -11,3 +11,7 @@ export const shareByWhatsApp = (clientId, documentUrl) => {
 export const shareBySMS = (clientId, documentUrl) => {
   return api.post('/share/sms', { clientId, documentUrl });
 };
+
+export const shareAll = (clientId, documentUrl) => {
+  return api.post('/share/all', { clientId, documentUrl });
+};

@@ -5,6 +5,7 @@ exports.getDocumentLinks = async (req, res) => {
   try {
     // Read the Excel file
     const excelPath = path.join(__dirname, '..', 'FinalExceWithLink.xlsx');
+    console.log('Excel path:', excelPath);
     const workbook = XLSX.readFile(excelPath);
     const sheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[sheetName];
@@ -16,17 +17,17 @@ exports.getDocumentLinks = async (req, res) => {
     const mappedData = clientData.map(client => {
       const mappedClient = {
         'CUSTOMER NAME': client['CUSTOMER NAME'],
-        'MOBILE NUMBER': client['BORRWER PHONE NUMBER'],
-        'EMAIL ID': client['BORRWER EMAIL ID'],
+        'MOBILE NUMBER': client[' BORRWER PHONE NUMBER '],
+        'EMAIL ID': client[' BORRWER EMAIL ID '],
         'CUSTOMER ID': client['Final Loan ID'],
         'ZONE': client['ZONE'],
         'STATE': client['STATE'] || '',
-        'documentLink': client['Links']
+        'documentLink': client[' Links ']
       };
-      console.log('Mapped Client:', mappedClient); // Log each mapped client
+      // console.log('Mapped Client:', mappedClient[0]); // Log each mapped client
       return mappedClient;
     });
-
+    console.log('Mapped Data:', mappedData[0]); // Log the first row of mapped data
     res.status(200).json(mappedData);
   } catch (error) {
     console.error('Error reading document data:', error);

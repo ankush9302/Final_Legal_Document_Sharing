@@ -8,6 +8,8 @@ import ClientManagement from './components/ClientManagement';
 import ReportSection from './components/ReportSection';
 import Register from './components/Register';
 import Login from './components/Login';
+import ManageSubadmin from './components/ManageSubadmin';
+import CityManagement from './components/CityManagement';
 
 function App() {
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
@@ -23,9 +25,13 @@ function App() {
             isAuthenticated ? (
               <DefaultLayout>
                 <Routes>
+                  <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/" element={<Dashboard />} />
-                  <Route path="/upload" element={<UploadForm />} />
+                  <Route path="/share-documents" element={<UploadForm />} />
+                  <Route path="/subadmin-management" element={<ManageSubadmin />} />
                   <Route path="/clients" element={<ClientManagement />} />
+                  <Route path="/city-management" element={<CityManagement />} />
+                  {/* upper ke routes workin hai */}
                   <Route path="/report" element={<ReportSection />} />
                 </Routes>
               </DefaultLayout>

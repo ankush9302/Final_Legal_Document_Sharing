@@ -1,0 +1,55 @@
+.subadmin-page {
+  font-family: Arial, sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.subadmin-page h1 {
+  color: #333;
+}
+
+.subadmin-page h2 {
+  color: #444;
+}
+
+.subadmin-section {
+  margin-bottom: 30px;
+}
+
+.subadmin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.subadmin-table th {
+  background-color: #f2f2f2;
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.subadmin-table td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+.subadmin-button {
+  padding: 8px 12px;
+  margin: 0 5px;
+  cursor: pointer;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+.subadmin-button.delete {
+  background-color: #f44336;
+}
+
+.subadmin-select {
+  width: 100%;
+  padding: 5px;
+}

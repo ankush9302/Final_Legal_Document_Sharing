@@ -8,7 +8,8 @@ import {
 	TeamOutlined,
 	SettingOutlined,
 	UserOutlined,
-	LogoutOutlined
+	LogoutOutlined,
+	EnvironmentOutlined
 } from '@ant-design/icons';
 import '../styles/DefaultLayout.css';
 import { logout } from '../redux/userSlice';
@@ -26,9 +27,12 @@ const DefaultLayout = ({ children }) => {
 	const adminMenu = [
 		{ key: '/dashboard', icon: <HomeOutlined />, label: 'Home' },
 		{ key: '/share-documents', icon: <UploadOutlined />, label: 'Upload & Share' },
-		{ key: '/SubAdmin-management', icon: <TeamOutlined />, label: 'Manage SubAdmin' },
+		{ key: '/subadmin-management', icon: <TeamOutlined />, label: 'Manage SubAdmin' },
+		{ key: '/clients', icon: <TeamOutlined />, label: 'Manage Clients' },
+		{ key: '/report', icon: <TeamOutlined />, label: 'View Reports' },
 		{ key: '/settings', icon: <SettingOutlined />, label: 'Settings' },
 		{ key: '/profile', icon: <UserOutlined />, label: 'Profile' },
+		{ key: '/city-management', icon: <EnvironmentOutlined />, label: 'Manage Cities' },
 	];
 
 	const subadminMenu = [
