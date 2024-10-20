@@ -33,6 +33,7 @@ const DefaultLayout = ({ children }) => {
 		{ key: '/settings', icon: <SettingOutlined />, label: 'Settings' },
 		{ key: '/profile', icon: <UserOutlined />, label: 'Profile' },
 		{ key: '/city-management', icon: <EnvironmentOutlined />, label: 'Manage Cities' },
+		{ key: '/subscription', icon: <EnvironmentOutlined />, label: 'Subscription' },
 	];
 
 	const subadminMenu = [

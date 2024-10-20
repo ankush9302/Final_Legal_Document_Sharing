@@ -10,6 +10,7 @@ import Register from './components/Register';
 import Login from './components/Login';
 import ManageSubadmin from './components/ManageSubadmin';
 import CityManagement from './components/CityManagement';
+import Subscription from './components/Subscription';
 
 function App() {
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
@@ -31,7 +32,8 @@ function App() {
                   <Route path="/subadmin-management" element={<ManageSubadmin />} />
                   <Route path="/clients" element={<ClientManagement />} />
                   <Route path="/city-management" element={<CityManagement />} />
-                  {/* upper ke routes workin hai */}
+                  <Route path="/subscription" element={<Subscription />} />
+                  {/* upper ke routes working hai */}
                   <Route path="/report" element={<ReportSection />} />
                 </Routes>
               </DefaultLayout>
