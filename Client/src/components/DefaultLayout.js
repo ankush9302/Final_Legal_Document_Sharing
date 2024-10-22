@@ -9,7 +9,12 @@ import {
 	SettingOutlined,
 	UserOutlined,
 	LogoutOutlined,
-	EnvironmentOutlined
+	EnvironmentOutlined,
+	UserSwitchOutlined,
+	BarChartOutlined,
+	CreditCardOutlined,
+	FileExcelOutlined,
+	FilePdfOutlined,
 } from '@ant-design/icons';
 import '../styles/DefaultLayout.css';
 import { logout } from '../redux/userSlice';
@@ -27,19 +32,21 @@ const DefaultLayout = ({ children }) => {
 	const adminMenu = [
 		{ key: '/dashboard', icon: <HomeOutlined />, label: 'Home' },
 		{ key: '/share-documents', icon: <UploadOutlined />, label: 'Upload & Share' },
-		{ key: '/subadmin-management', icon: <TeamOutlined />, label: 'Manage SubAdmin' },
+		{ key: '/subadmin-management', icon: <UserSwitchOutlined />, label: 'Manage SubAdmin' },
 		{ key: '/clients', icon: <TeamOutlined />, label: 'Manage Clients' },
-		{ key: '/report', icon: <TeamOutlined />, label: 'View Reports' },
+			{ key: '/report', icon: <BarChartOutlined />, label: 'View Reports' },
 		{ key: '/settings', icon: <SettingOutlined />, label: 'Settings' },
 		{ key: '/profile', icon: <UserOutlined />, label: 'Profile' },
 		{ key: '/city-management', icon: <EnvironmentOutlined />, label: 'Manage Cities' },
-		{ key: '/subscription', icon: <EnvironmentOutlined />, label: 'Subscription' },
+		{ key: '/subscription', icon: <CreditCardOutlined />, label: 'Subscription' },
+		{ key: '/excel-upload', icon: <FileExcelOutlined />, label: 'Excel Upload' },
+		{ key: '/pdf-processing', icon: <FilePdfOutlined />, label: 'PDF Processing' },
 	];
 
 	const subadminMenu = [
 		{ key: '/dashboard', icon: <HomeOutlined />, label: 'Home' },
 		{ key: '/share-documents', icon: <UploadOutlined />, label: 'Upload & Share' },
-		{ key: '/profile', icon: <UserOutlined />, label: 'Profile' },
+			{ key: '/profile', icon: <UserOutlined />, label: 'Profile' },
 	];
 
 	const menuItems = userRole === 'subadmin' ? subadminMenu : adminMenu;

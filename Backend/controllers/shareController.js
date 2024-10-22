@@ -4,7 +4,8 @@ const XLSX = require('xlsx');
 const path = require('path');
 
 const getClientData = (clientId) => {
-   const excelPath = path.join(__dirname, '..', 'FinalExceWithLink.xlsx');
+  const excelPath = path.join(__dirname, '..', 'FinalExceWithLink.xlsx');
+  console.log("excelPath",__dirname);
     console.log('Excel path:', excelPath);
     const workbook = XLSX.readFile(excelPath);
     const sheetName = workbook.SheetNames[0];

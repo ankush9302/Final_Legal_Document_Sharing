@@ -6,7 +6,8 @@ const { getDocumentLinks } = require('./controllers/documentController');
 const subadminRoutes = require('./routes/subadminRoutes');
 const shareRoutes = require('./routes/shareRoutes');
 const cityRoutes = require('./routes/cityRoutes');
-
+const excelRoutes = require('./routes/excelRoutes');
+const pdfProcessingRoutes = require('./routes/pdfProcessingRoutes');
 // Load env vars
 require('dotenv').config();
 
@@ -36,6 +37,8 @@ app.use('/api/subadmins', (req, res, next) => {
 app.use('/api/share', shareRoutes);
 
 app.use('/api/cities', cityRoutes);
+app.use('/api/excel', excelRoutes);
+app.use('/api/pdf-processing', pdfProcessingRoutes);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

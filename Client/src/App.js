@@ -11,6 +11,8 @@ import Login from './components/Login';
 import ManageSubadmin from './components/ManageSubadmin';
 import CityManagement from './components/CityManagement';
 import Subscription from './components/Subscription';
+import ExcelUpload from './components/ExcelUpload';
+import PDFUploadAndProcess from './components/PDFUploadAndProcess';
 
 function App() {
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
@@ -33,6 +35,8 @@ function App() {
                   <Route path="/clients" element={<ClientManagement />} />
                   <Route path="/city-management" element={<CityManagement />} />
                   <Route path="/subscription" element={<Subscription />} />
+                  <Route path="/excel-upload" element={<ExcelUpload />} />
+                  <Route path="/pdf-processing" element={<PDFUploadAndProcess />} />
                   {/* upper ke routes working hai */}
                   <Route path="/report" element={<ReportSection />} />
                 </Routes>
