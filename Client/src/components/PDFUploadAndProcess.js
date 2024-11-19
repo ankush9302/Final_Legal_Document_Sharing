@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { Upload, message, Button } from 'antd';
+import { Upload, message, Button, Input } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
 
-const PDFUploadAndProcess = () => {
+const PDFUploadAndProcess = ({ messageTemplate }) => {
   const [pdfFile, setPdfFile] = useState(null);
   const [excelFile, setExcelFile] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [pagesPerSplit, setPagesPerSplit] = useState(1);
 
   const handleUpload = async () => {
     if (!pdfFile || !excelFile) {
@@ -17,6 +18,8 @@ const PDFUploadAndProcess = () => {
     const formData = new FormData();
     formData.append('pdf', pdfFile);
     formData.append('excel', excelFile);
+    formData.append('pagesPerSplit', pagesPerSplit);
+    formData.append('messageTemplate', messageTemplate);
 
     setUploading(true);
 
@@ -67,6 +70,14 @@ const PDFUploadAndProcess = () => {
       <Upload {...excelProps} style={{ marginTop: 16 }}>
         <Button icon={<UploadOutlined />}>Select Excel</Button>
       </Upload>
+      <Input
+        type="number"
+        min={1}
+        value={pagesPerSplit}
+        onChange={(e) => setPagesPerSplit(e.target.value)}
+        placeholder="Number of pages per split"
+        style={{ marginTop: 16 }}
+      />
       <Button
         type="primary"
         onClick={handleUpload}

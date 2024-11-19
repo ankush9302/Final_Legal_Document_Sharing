@@ -44,7 +44,11 @@ function UploadForm() {
     try {
       for (const clientId of selectedClients) {
         const client = clientData.find(c => c['CUSTOMER ID'] === clientId);
-        await shareFunction(client['CUSTOMER ID'], client.documentLink);
+        await shareFunction(
+          client['CUSTOMER ID'], 
+          client.documentLink,
+          localStorage.getItem('messageTemplate')
+        );
       }
       message.success(`Documents shared via ${method}`);
     } catch (error) {
@@ -62,7 +66,11 @@ function UploadForm() {
     try {
       for (const clientId of selectedClients) {
         const client = clientData.find(c => c['CUSTOMER ID'] === clientId);
-        await shareAll(client['CUSTOMER ID'], client.documentLink);
+        await shareAll(
+          client['CUSTOMER ID'], 
+          client.documentLink,
+          localStorage.getItem('messageTemplate')
+        );
       }
       message.success('Documents shared via all channels');
     } catch (error) {

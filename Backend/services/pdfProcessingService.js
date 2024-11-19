@@ -3,6 +3,36 @@ const path = require('path');
 const pdf = require('pdf-lib');
 const cloudinary = require('../config/cloudinary');
 
+
+
+//this is only in use 
+exports.splitPdfIntoPages = async (pdfPath, pagesPerSplit) => {
+  const pdfBuffer = await fs.readFile(pdfPath);
+  // console.log("pdfBuffer",pdfBuffer);
+  const pdfDoc = await pdf.PDFDocument.load(pdfBuffer);
+  const pages = [];
+  const totalPages = pdfDoc.getPageCount();
+  // console.log("pdfdoc",pdfDoc);
+  for (let i = 0; i < totalPages; i += pagesPerSplit) {
+    const newPdf = await pdf.PDFDocument.create();
+    const end = Math.min(i + pagesPerSplit, totalPages);
+    const copiedPages = await newPdf.copyPages(pdfDoc, Array.from({ length: end - i }, (_, j) => i + j));
+    // console.log("copiedPages",copiedPages);
+    copiedPages.forEach((page) => {
+      newPdf.addPage(page);
+    });
+
+    const pdfBytes = await newPdf.save();
+    const pagePath = path.join(path.dirname(pdfPath), `split_${Math.floor(i / pagesPerSplit) + 1}.pdf`);
+    await fs.writeFile(pagePath, pdfBytes);
+
+    pages.push({ pageNumber: Math.floor(i / pagesPerSplit) + 1, path: pagePath });
+  }
+
+  return pages;
+};
+
+//not in use now
 const extractContactInfo = (text) => {
   const singleLineText = text.replace(/\n/g, ' ').replace(/\s+/g, ' ');
 
@@ -53,23 +83,4 @@ exports.processAndUploadPDF = async (pdfPath) => {
   }
 
   return uploadedPages;
-};
-
-exports.splitPdfIntoPages = async (pdfPath) => {
-  const pdfDoc = await pdf.PDFDocument.load(await fs.readFile(pdfPath));
-  const pages = [];
-
-  for (let i = 0; i < pdfDoc.getPageCount(); i++) {
-    const newPdf = await pdf.PDFDocument.create();
-    const [copiedPage] = await newPdf.copyPages(pdfDoc, [i]);
-    newPdf.addPage(copiedPage);
-
-    const pdfBytes = await newPdf.save();
-    const pagePath = path.join(path.dirname(pdfPath), `page_${i + 1}.pdf`);
-    await fs.writeFile(pagePath, pdfBytes);
-
-    pages.push({ pageNumber: i + 1, path: pagePath });
-  }
-
-  return pages;
 };

@@ -4,20 +4,25 @@ const cloudinaryService = require('../services/cloudinaryService');
 
 exports.uploadAndProcessFiles = async (req, res) => {
   try {
-    // Extract the first PDF file from the request files
     const pdfFile = req.files.pdf[0];
-    // Extract the first Excel file from the request files
     const excelFile = req.files.excel[0];
+    const pagesPerSplit = parseInt(req.body.pagesPerSplit, 10);
 
     // Process PDF
-    const pdfPages = await pdfProcessingService.splitPdfIntoPages(pdfFile.path);
+    // console.log("pdfFile", pdfFile);
+    console.time();
+    const pdfPages = await pdfProcessingService.splitPdfIntoPages(pdfFile.path, pagesPerSplit);
+    console.log("pdfPages", pdfPages);
+    
 
     // Upload PDF pages to Cloudinary
     const uploadedPages = await Promise.all(pdfPages.map(async (page) => {
       const cloudinaryUrl = await cloudinaryService.uploadFile(page.path);
       return { ...page, cloudinaryUrl };
     }));
-
+    
+    console.timeEnd();
+    // console.log("uploadedPages",uploadedPages);
     // Update Excel file with links
     const updatedExcelPath = await excelService.updateExcelWithLinks(excelFile.path, uploadedPages);
 
@@ -26,10 +31,10 @@ exports.uploadAndProcessFiles = async (req, res) => {
 
     res.status(200).json({
       message: 'Files processed and uploaded successfully',
-      pages: excelData,
+      // pages: excelData,
     });
   } catch (error) {
-    console.error('Error processing files:', error);
+    console.error('Error processing files: in pdfProcessingController', error);
     res.status(500).json({ error: 'Failed to process files', details: error.message });
   }
 };

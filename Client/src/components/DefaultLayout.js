@@ -15,6 +15,8 @@ import {
 	CreditCardOutlined,
 	FileExcelOutlined,
 	FilePdfOutlined,
+	EditOutlined,
+
 } from '@ant-design/icons';
 import '../styles/DefaultLayout.css';
 import { logout } from '../redux/userSlice';
@@ -31,7 +33,7 @@ const DefaultLayout = ({ children }) => {
 
 	const adminMenu = [
 		{ key: '/dashboard', icon: <HomeOutlined />, label: 'Home' },
-		{ key: '/share-documents', icon: <UploadOutlined />, label: 'Upload & Share' },
+		{ key: '/share-documents', icon: <UploadOutlined />, label: 'Share Documents' },
 		{ key: '/subadmin-management', icon: <UserSwitchOutlined />, label: 'Manage SubAdmin' },
 		{ key: '/clients', icon: <TeamOutlined />, label: 'Manage Clients' },
 			{ key: '/report', icon: <BarChartOutlined />, label: 'View Reports' },
@@ -41,6 +43,7 @@ const DefaultLayout = ({ children }) => {
 		{ key: '/subscription', icon: <CreditCardOutlined />, label: 'Subscription' },
 		{ key: '/excel-upload', icon: <FileExcelOutlined />, label: 'Excel Upload' },
 		{ key: '/pdf-processing', icon: <FilePdfOutlined />, label: 'PDF Processing' },
+		{ key: '/message-editor', icon: <EditOutlined />, label: 'Message Editor' },
 	];
 
 	const subadminMenu = [

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import DefaultLayout from './components/DefaultLayout';
@@ -13,9 +13,12 @@ import CityManagement from './components/CityManagement';
 import Subscription from './components/Subscription';
 import ExcelUpload from './components/ExcelUpload';
 import PDFUploadAndProcess from './components/PDFUploadAndProcess';
+import MessageEditor from './components/MessageEditor';
+import Profile from './components/Profile';
 
 function App() {
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
+  const [messageTemplate, setMessageTemplate] = useState('');
 
   return (
     <Router>
@@ -36,7 +39,9 @@ function App() {
                   <Route path="/city-management" element={<CityManagement />} />
                   <Route path="/subscription" element={<Subscription />} />
                   <Route path="/excel-upload" element={<ExcelUpload />} />
-                  <Route path="/pdf-processing" element={<PDFUploadAndProcess />} />
+                  <Route path="/message-editor" element={<MessageEditor onSave={setMessageTemplate} />} />
+                  <Route path="/pdf-processing" element={<PDFUploadAndProcess messageTemplate={messageTemplate} />} />
+                  {/* <Route path="/profile" element={<Profile />} /> */}
                   {/* upper ke routes working hai */}
                   <Route path="/report" element={<ReportSection />} />
                 </Routes>

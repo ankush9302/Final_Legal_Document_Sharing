@@ -8,16 +8,20 @@ export const uploadDocument = (formData) => {
   return api.post('/upload', formData);
 };
 
-export const shareByEmail = (clientId, documentUrl) => {
-  return api.post('/share/email', { clientId, documentUrl });
+export const shareByEmail = (clientId, documentUrl, messageTemplate) => {
+  return api.post('/share/email', { clientId, documentUrl, messageTemplate });
 };
 
-export const shareByWhatsApp = (clientId, documentUrl) => {
-  return api.post('/share/whatsapp', { clientId, documentUrl });
+export const shareByWhatsApp = (clientId, documentUrl, messageTemplate) => {
+  return api.post('/share/whatsapp', { clientId, documentUrl, messageTemplate });
 };
 
-export const shareBySMS = (clientId, documentUrl) => {
-  return api.post('/share/sms', { clientId, documentUrl });
+export const shareBySMS = (clientId, documentUrl, messageTemplate) => {
+  return api.post('/share/sms', { clientId, documentUrl, messageTemplate });
+};
+
+export const shareAll = (clientId, documentUrl, messageTemplate) => {
+  return api.post('/share/all', { clientId, documentUrl, messageTemplate });
 };
 
 export const checkWhatsAppStatus = (messageSid) => {

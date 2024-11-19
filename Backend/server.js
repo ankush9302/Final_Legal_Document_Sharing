@@ -34,10 +34,13 @@ app.use('/api/subadmins', (req, res, next) => {
   next();
 }, subadminRoutes);
 
-app.use('/api/share', shareRoutes);
+app.use('/api/share', (req, res, next) => {
+  console.log(`Received ${req.method} request to ${req.originalUrl}`);
+  next();
+}, shareRoutes);
 
 app.use('/api/cities', cityRoutes);
-app.use('/api/excel', excelRoutes);
+app.use('/api/excel', excelRoutes);  //not in use now
 app.use('/api/pdf-processing', pdfProcessingRoutes);
 
 app.listen(port, () => {
