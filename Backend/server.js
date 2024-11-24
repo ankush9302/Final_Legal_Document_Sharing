@@ -8,6 +8,7 @@ const shareRoutes = require('./routes/shareRoutes');
 const cityRoutes = require('./routes/cityRoutes');
 const excelRoutes = require('./routes/excelRoutes');
 const pdfProcessingRoutes = require('./routes/pdfProcessingRoutes');
+const mailgunWebhookRoutes = require('./routes/mailgunWebhook');
 // Load env vars
 require('dotenv').config();
 
@@ -42,6 +43,7 @@ app.use('/api/share', (req, res, next) => {
 app.use('/api/cities', cityRoutes);
 app.use('/api/excel', excelRoutes);  //not in use now
 app.use('/api/pdf-processing', pdfProcessingRoutes);
+app.use('/api/mailgun', mailgunWebhookRoutes);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

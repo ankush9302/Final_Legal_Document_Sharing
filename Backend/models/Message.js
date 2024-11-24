@@ -9,27 +9,27 @@ const deliveryStatus = {
 };
 
 const messageSchema = new mongoose.Schema({
-  clientId: {
+  clientId: { //will be the id of the user who is receiving the document
     type: String,
     required: true,
     index: true
   },
-  sentTo: {
+  sentTo: {  //will be the name of the user who is receiving the document
     type: String,
     required: true,
     trim: true
   },
-  sender: {
-    type: mongoose.Schema.Types.ObjectId,
+  sender: { //will be the id of the user who is sending the document
+    type: String,
     ref: 'User',
     required: true
   },
-  documentLink: {
+  documentLink: { //will be the link to the document
     type: String,
     required: true
   },
  
-  whatsapp: {
+  whatsapp: { //will be the delivery status of the whatsapp message
     status: {
       type: String,
       enum: Object.values(deliveryStatus),
@@ -37,14 +37,29 @@ const messageSchema = new mongoose.Schema({
     },
     sentAt: Date
   },
-  email: {
+  email: { //will be the delivery status of the email
     status: {
       type: String,
-      enum: Object.values(deliveryStatus),
-      default: deliveryStatus.NOT_ATTEMPTED
+      enum: ['not_attempted', 'sent', 'delivered', 'failed', 'bounced', 'opened', 'clicked'],
+      default: 'not_attempted'
     },
-    sentAt: Date
+    mailgunId: String,
+    sentAt: Date,
+    deliveredAt: Date,
+    openedAt: [Date],
+    clickedAt: [Date],
+    clickedLinks: [String],
+    bounceInfo: {
+      code: String,
+      error: String,
+      timestamp: Date
+    },
+    isAuthorizedRecipient: {
+      type: Boolean,
+      default: false
+    }
   },
+
   sms: {
     status: {
       type: String,

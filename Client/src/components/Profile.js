@@ -8,6 +8,9 @@ const Profile = () => {
   const user = useSelector((state) => state.user);
   const [stats, setStats] = useState({
     totalEmailsSent: 0,
+    emailsOpened: 0,
+    emailsClicked: 0,
+    emailsBounced: 0,
     totalWhatsAppSent: 0,
     totalSMSSent: 0,
     documentsShared: 0
