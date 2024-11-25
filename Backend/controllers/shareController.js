@@ -105,27 +105,25 @@ exports.shareByEmail = async (req, res) => {
 
     // Log the email details
     console.log('Sending email to:', client['BORRWER EMAIL ID']);
-    // console.log('Email body:', emailBody);
+    console.log('Email body:', emailBody);
    const recieverEmail = client['BORRWER EMAIL ID'];
     const emailResponse = await sendEmail(
        recieverEmail,
       'Document of your Case shared by Legal Doc Sharing',
       emailBody,
-      htmlBody,
-      client['CUSTOMER ID']
+      htmlBody
     );
 
     console.log('Email response:', emailResponse);
     const message = await MessageService.
       createOrUpdateMessage({
         clientId,
-        channel: 'email',
-        status: emailResponse.status,
         sentTo: recieverEmail,
-        sender: 'legal doc sharing' ,
-        documentLink: documentUrl,
-        documentName:'Document of your Case',
-        
+        sender: 'Legal Doc Sharing',
+        documentLink: documentUrl, documentName:
+          'Document of your Case',
+        channel: 'email',
+        status: emailResponse.status
       });
 
     res.status(200).json({ 
@@ -230,8 +228,7 @@ exports.shareAll = async (req, res) => {
         client['BORRWER EMAIL ID'],
         'Document of your Case shared by Legal Doc Sharing',
         emailBody,
-        htmlBody,
-        client['CUSTOMER ID']
+        htmlBody
       ),
       // Send WhatsApp
       twilioClient.messages.create({
