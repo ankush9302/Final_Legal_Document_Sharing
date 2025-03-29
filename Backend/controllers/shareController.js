@@ -104,8 +104,8 @@ exports.shareByEmail = async (req, res) => {
     const htmlBody = `<p>${emailBody}</p><p><a href="${documentUrl}">Click here to view your document</a></p>`;
 
     // Log the email details
-    console.log('Sending email to:', client['BORRWER EMAIL ID']);
-    console.log('Email body:', emailBody);
+    // console.log('Sending email to:', client['BORRWER EMAIL ID']);
+    // console.log('Email body:', emailBody);
    const recieverEmail = client['BORRWER EMAIL ID'];
     const emailResponse = await sendEmail(
        recieverEmail,

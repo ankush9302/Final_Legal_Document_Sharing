@@ -1,0 +1,61 @@
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
+const Batch=require("./Batches")
+
+const loanClientSchema = new Schema({
+    batchId:{type:mongoose.Schema.Types.ObjectId,ref:Batch},
+    slNo: Number,
+    clContractId: String,
+    lkLoanAccountId: String,
+    finalLoanId: String,
+    customerName: String,
+    lenderName: String,
+    colendRatio: String,    
+    zone: String,
+    state: String,
+    location: String,
+    ncm: String,
+    zcm: String,
+    rcm: String,
+    acm: String,
+    cmInhouseTl: String,
+    collCat: String,
+    resoStatus: String,
+    resoRate: String,
+    currentDpd: Number,
+    opnPos: Number,
+    currentMonthBestDispo: String,
+    workNonWork: String,
+    lastMonthBestDispo: String,
+    borrowerName: String,
+    borrowerAddress: String,
+    borrowerEmailId: String,
+    borrowerPhoneNumber: String,
+    coBorrowerName: String,
+    coBorrowerAddress: String,
+    coBorrowerEmailId: String,
+    coBorrowerPhoneNumber: String,
+    lkOfficeAddress: String,
+    lkContactPersonName: String,
+    lkContactPersonMobileNum: String,
+    product: String,
+    loanAmount: Number,
+    tosDate: String,
+    tosAmount: Number,
+    emiFrequency: String,
+    emiAmount: Number,
+    installmentDueAmount: Number,
+    chargesAmount: Number,
+    agreementDate: Number,
+    placeOfConciliation: String,
+    conciliatorName: String,
+    conciliationAddress: String,
+    campDate: String,
+    advocateName: String,
+    fpr: String,
+    documentLink: String
+}, { timestamps: true }); // Enables createdAt and updatedAt timestamps
+
+const loanClient = mongoose.model('loanClient', loanClientSchema);
+
+module.exports = loanClient;

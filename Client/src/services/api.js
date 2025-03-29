@@ -28,4 +28,8 @@ export const checkWhatsAppStatus = (messageSid) => {
   return api.post('/get-status', { messageSid });
 };
 
+export const getEmailStats = () => {
+  return api.get('/email-stats');
+};
+
 export default api;

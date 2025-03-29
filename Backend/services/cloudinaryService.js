@@ -10,7 +10,7 @@ exports.uploadFile = async (filePath) => {
   try {
     const result = await cloudinary.uploader.upload(filePath, {
       resource_type: 'auto',
-      folder: 'legal_documents'
+      folder: 'New_Legal_Documents' //making this new folder after db schema changes
     });
     return result.secure_url;
   } catch (error) {

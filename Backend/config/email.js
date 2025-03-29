@@ -2,29 +2,37 @@ require('dotenv').config();
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail', // Can be replaced with any email service (like SendGrid, Mailgun, Amazon SES)
+  service: 'Mailgun',
   auth: {
-    user: process.env.SENDER_EMAIL_ID,  // Your email
-      pass: process.env.SENDER_EMAIL_PASSWORD,  // Your email password or app-specific password
+    user: process.env.MAILGUN_USER,  // Your Mailgun user
+    pass: process.env.MAILGUN_PASSWORD,  // Your Mailgun password or API key
   },
 });
 
 // Function to send emails
 const sendEmail = async (toEmail, subject, textBody, htmlBody) => {
   const mailOptions = {
-    from: process.env.SENDER_EMAIL_ID,  // Sender address from env variable
-    to: toEmail,                        // Recipient's email address
-    subject: subject,                   // Email subject
-    text: textBody,                     // Plaintext body (optional)
-    html: htmlBody,                     // HTML body (optional)
+    from: process.env.SENDER_EMAIL_ID,
+    to: toEmail,
+    subject: subject,
+    text: textBody,
+    html: htmlBody,
   };
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log(`Email sent: ${info.response}`);
+    console.log(`Email sent: ${info.response}------------------------------------------------------------`);
+    console.log(info);
+    console.log("---------------------------------------------------------------------------------------");
+    return { status: 'sent', id: info.messageId }; // Return message ID
   } catch (error) {
     console.error(`Error sending email: ${error}`);
+    return { status: 'failed', error: error.message }; // Return error
   }
 };
 
 module.exports = { sendEmail };
+
+
+//problem--- send 100s msg
+//
