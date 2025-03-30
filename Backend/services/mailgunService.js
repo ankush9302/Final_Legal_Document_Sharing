@@ -135,10 +135,10 @@ class MailgunWebhookService {
         messageId: event['event-data'].message.headers['message-id']
       };
 
-      // console.log('Processed webhook event data:', eventData);
+      console.log('Processed webhook event data:', eventData);
 
       // Broadcast both the event and updated stats
-      this.broadcastUpdate(eventData);
+      // this.broadcastUpdate(eventData);
     } catch (error) {
       console.error('Error processing webhook event:', error);
     }

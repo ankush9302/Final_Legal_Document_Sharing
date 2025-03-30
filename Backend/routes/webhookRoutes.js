@@ -7,5 +7,7 @@ router.post("/mailgun", webhookController.handleEmailWebhook);
 
 // Route for handling WhatsApp webhook
 router.post("/whatsapp", webhookController.handleWhatsappWebhook);
+//to verify
+router.get("/meta", webhookController.verifyWebhook);
 
 module.exports = router;

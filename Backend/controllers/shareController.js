@@ -6,15 +6,15 @@ const path = require('path');
 const fs = require('fs');
 const MongoService = require('../models/MongoModel');
 const loanClient = require('../models/loanClients');
-
-
+const {sendWhatsAppMessage}=require('../services/whatsappService')
+const MongooseService=require("../models/MongoModel")
 // Improved getClientData function with better error handling and logging
 const getClientData = async (clientId) => {
   try {
 
-    const client = await loanClient.findOne({ 'clContractId': clientId }).lean();
+    const client = await loanClient.findOne({ '_id': clientId }).lean();
 
-    console.log('Cleaned data:', client);
+    // console.log('Client Found Data:', client);
 
     if (!client) {
       console.log('Client not found with ID:', clientId);
@@ -111,40 +111,37 @@ exports.shareByEmail = async (req, res) => {
 
 exports.shareByWhatsApp = async (req, res) => {
   try {
-    const { clientId, documentUrl, messageTemplate } = req.body;
-    // console.log('Received request for WhatsApp sharing:', { clientId, documentUrl });
+    const { clientId, messageTemplate} = req.body;
+    const {batchId}=req.params
 
-    const client = getClientData(clientId);
+    const client = await getClientData(clientId);
     if (!client) {
-      console.error('Client not found:', clientId);
-      return res.status(404).json({ 
-        error: 'Client not found',
-        details: 'Unable to find client data in Excel file'
-      });
+      return res.status(404).json({ error: "Client not found" });
     }
-
+    const documentUrl = `https://example.com/`;
     const customMessage = processTemplate(messageTemplate, client);
     const messageBody = `${customMessage}\n\nClick here to view your document: ${documentUrl}`;
 
-    console.log('Sending WhatsApp to:', client['BORRWER PHONE NUMBER']);
-    console.log('Message body:', messageBody);
+    console.log("Sending WhatsApp to:",client.borrowerPhoneNumber);
 
-    await twilioClient.messages.create({
-      body: messageBody,
-      from: 'whatsapp:+14155238886',
-      to: `whatsapp:+91${client['BORRWER PHONE NUMBER']}`
-    });
+    const response = await sendWhatsAppMessage(client.borrowerPhoneNumber, messageBody);
+    console.log("Message sent to WhatsApp:", response);
+    const messageId = response?.messages?.[0]?.id || null;
+   const whatsappMessageObject={
+    clientId,
+    batchId,
+    messageId:response.messages[0].id,
+    message:messageBody,
+    status: messageId ? "sent" : "failed",
+   }
+   const messageResult=MongooseService.createWhatsAppMessage(whatsappMessageObject)
 
-    res.status(200).json({ 
-      message: 'WhatsApp message sent successfully',
-      processedMessage: customMessage
+    res.status(200).json({
+      message: "WhatsApp message sent successfully",
+      response,
     });
   } catch (error) {
-    console.error('Error in shareByWhatsApp:', error);
-    res.status(500).json({ 
-      error: 'Failed to send WhatsApp message',
-      details: error.message
-    });
+    res.status(500).json({ error: error.message });
   }
 };
 

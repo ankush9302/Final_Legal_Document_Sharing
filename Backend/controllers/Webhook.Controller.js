@@ -119,7 +119,34 @@ const handleWhatsappWebhook = async (req, res) => {
   }
 };
 
+const VERIFY_TOKEN = process.env.WEBHOOK_VERIFY_TOKEN || "my_secure_token"; // Store in .env
+
+/**
+ * Meta Webhook Verification Handler
+ */
+const verifyWebhook = (req, res) => {
+    console.log("recieved req for verifying meta token",req)
+  const mode = req.query["hub.mode"];
+  const token = req.query["hub.verify_token"];
+  const challenge = req.query["hub.challenge"];
+
+  if (mode && token) {
+    if (mode === "subscribe" && token === VERIFY_TOKEN) {
+      console.log("✅ Webhook Verified Successfully");
+      return res.status(200).send(challenge); // Meta expects this challenge response
+    } else {
+      console.error("❌ Verification failed. Invalid token.");
+      return res.sendStatus(403); // Forbidden
+    }
+  }
+  return res.sendStatus(400); // Bad request
+};
+
+
+
+
 module.exports = {
   handleEmailWebhook,
   handleWhatsappWebhook,
+  verifyWebhook
 };
