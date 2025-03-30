@@ -3,7 +3,7 @@ const { Schema } = mongoose;
 const Batch=require("./Batches")
 
 const loanClientSchema = new Schema({
-    batchId:{type:mongoose.Schema.Types.ObjectId,ref:Batch},
+    batchId:{type:mongoose.Schema.Types.ObjectId,ref:Batch , index: true},
     slNo: Number,
     clContractId: String,
     lkLoanAccountId: String,

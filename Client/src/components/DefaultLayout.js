@@ -20,6 +20,7 @@ import {
 } from '@ant-design/icons';
 import '../styles/DefaultLayout.css';
 import { logout } from '../redux/userSlice';
+import BatchSelector from './BatchSelector';
 
 const { Header, Sider, Content } = Layout;
 
@@ -74,6 +75,9 @@ const DefaultLayout = ({ children }) => {
 			</Sider>
 			<Layout>
 				<Header style={{ background: '#fff', padding: 0 }}>
+						<div style={{marginLeft: '16px'}}>
+							<BatchSelector/>
+						</div>
 					<div style={{ float: 'right', marginRight: '16px' }}>
 						<span style={{ marginRight: '8px' }}>{userName}</span>
 						<Button onClick={handleLogout} icon={<LogoutOutlined />}>

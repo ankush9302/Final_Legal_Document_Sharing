@@ -1,31 +1,31 @@
 import api from './api';
 
-export const shareByEmail = (clientId, documentUrl, messageTemplate) => {
-  return api.post('/share/email', { 
+export const shareByEmail = (clientId, documentUrl, messageTemplate , batchId) => {
+  return api.post(`/share/${batchId}/email`, { 
     clientId, 
     documentUrl,
     messageTemplate: localStorage.getItem('messageTemplate')
   });
 };
 
-export const shareByWhatsApp = (clientId, documentUrl, messageTemplate) => {
-  return api.post('/share/whatsapp', { 
+export const shareByWhatsApp = (clientId, documentUrl, messageTemplate, batchId) => {
+  return api.post(`/share/${batchId}/whatsapp`, { 
     clientId, 
     documentUrl,
     messageTemplate: localStorage.getItem('messageTemplate')
   });
 };
 
-export const shareBySMS = (clientId, documentUrl, messageTemplate) => {
-  return api.post('/share/sms', { 
+export const shareBySMS = (clientId, documentUrl, messageTemplate, batchId) => {
+  return api.post(`/share/${batchId}/sms`, { 
     clientId, 
     documentUrl,
     messageTemplate: localStorage.getItem('messageTemplate')
   });
 };
 
-export const shareAll = (clientId, documentUrl, messageTemplate) => {
-  return api.post('/share/all', { 
+export const shareAll = (clientId, documentUrl, messageTemplate , batchId) => {
+  return api.post(`/share/${batchId}/all`, { 
     clientId, 
     documentUrl,
     messageTemplate: localStorage.getItem('messageTemplate')
