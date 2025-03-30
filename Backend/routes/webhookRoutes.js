@@ -1,25 +1,11 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const mailgunService = require('../services/mailgunService');
+const webhookController = require("../controllers/Webhook.Controller");
 
-router.post('/mailgun', (req, res) => {
-  try {
-    // console.log('Received Mailgun webhook', req.body);
-    const timestamp = req.body.signature.timestamp;
-    const token = req.body.signature.token;
-    const signature = req.body.signature.signature;
+// Route for handling email webhook
+router.post("/mailgun", webhookController.handleEmailWebhook);
 
-    mailgunService.handleWebhookEvent(
-      req.body, 
-      timestamp, 
-      token, 
-      signature
-    );
-    res.status(200).send('OK');
-  } catch (error) {
-    console.error('Error processing Mailgun webhook:', error);
-    res.status(500).send('Error processing webhook');
-  }
-});
+// Route for handling WhatsApp webhook
+router.post("/whatsapp", webhookController.handleWhatsappWebhook);
 
-module.exports = router; 
+module.exports = router;

@@ -3,7 +3,6 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const { getDocumentLinks } = require('./controllers/documentController');
-const subadminRoutes = require('./routes/subadminRoutes');
 const shareRoutes = require('./routes/shareRoutes');
 const pdfProcessingRoutes = require('./routes/pdfProcessingRoutes');
 const emailStatsRoutes = require('./routes/emailStatsRoutes');
@@ -53,7 +52,7 @@ app.use('/api/email-stats', (req, res, next) => {
   next();
 }, emailStatsRoutes);
 
-app.use('/api/webhooks', webhookRoutes);
+app.use('/api/webhooks', webhookRoutes); // Route to listen for incoming webhooks from mailGun 
 
 server.listen(port, () => {
   console.log(`Server running on port ${port}`);

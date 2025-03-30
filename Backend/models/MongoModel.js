@@ -1,5 +1,6 @@
 const loanClient=require("./loanClients")
 const Batch = require('./Batches')
+const EmailMessage = require('./EmailMessage')
  class MongooseService {
     constructor() {
         this.connect();
@@ -83,6 +84,13 @@ const Batch = require('./Batches')
        
             await batchUploadDetails.save();
             return batchUploadDetails;
+    }
+
+    static async createEmailMessage(EmailMessageObject){
+       const emailMessage = new EmailMessage(EmailMessageObject);
+       const result=await emailMessage.save();
+       console.log("Saved Email to db");
+       return result;
     }
 }
 module.exports = MongooseService;

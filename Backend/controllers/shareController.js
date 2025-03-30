@@ -1,11 +1,10 @@
 // console.log('ShareController loaded');
-
 const { sendEmail } = require('../config/email');
 const twilioClient = require('../config/twilio');
 const XLSX = require('xlsx');
 const path = require('path');
 const fs = require('fs');
-const MessageService = require('../services/messageService');
+const MongoService = require('../models/MongoModel')
 // Helper function to process template with client data
 
 
@@ -87,48 +86,49 @@ const processTemplate = (template, client) => {
 
 exports.shareByEmail = async (req, res) => {
   try {
-    const { clientId, documentUrl, messageTemplate } = req.body;
+    const { clientId,batchId } = req.body;
     // console.log('Received request for email sharing:', { clientId, documentUrl });
 
-    const client = getClientData(clientId);
-    if (!client) {
-      console.error('Client not found:', clientId);
-      return res.status(404).json({ 
-        error: 'Client not found',
-        details: 'Unable to find client data in Excel file'
-      });
-    }
-
-    const customMessage = processTemplate(messageTemplate, client);
-    const emailBody = customMessage || 'Here is your document from Legal Doc Sharing.';
+    // const client = getClientData(clientId);
+    // if (!client) {
+    //   console.error('Client not found:', clientId);
+    //   return res.status(404).json({ 
+    //     error: 'Client not found',
+    //     details: 'Unable to find client data in Excel file'
+    //   });
+    // }
+   const documentUrl="https://res.cloudinary.com/duiy6ecai/image/upload/v1743243648/New_Legal_Documents/ewfnpckx07bq0ylqmleq.pdf";
+    // const customMessage = processTemplate(messageTemplate, client);
+    const emailBody =  'Here is your document from Legal Doc Sharing.';
     const htmlBody = `<p>${emailBody}</p><p><a href="${documentUrl}">Click here to view your document</a></p>`;
 
     // Log the email details
     // console.log('Sending email to:', client['BORRWER EMAIL ID']);
     // console.log('Email body:', emailBody);
-   const recieverEmail = client['BORRWER EMAIL ID'];
+    const subject='Document of your Case shared by Legal Doc Sharing';
+    const recieverEmail = 'jayshrikanth@gmail.com';  //hard coding for webhook testing
     const emailResponse = await sendEmail(
        recieverEmail,
-      'Document of your Case shared by Legal Doc Sharing',
+       subject ,
       emailBody,
       htmlBody
     );
 
     console.log('Email response:', emailResponse);
-    const message = await MessageService.
-      createOrUpdateMessage({
-        clientId,
-        sentTo: recieverEmail,
-        sender: 'Legal Doc Sharing',
-        documentLink: documentUrl, documentName:
-          'Document of your Case',
-        channel: 'email',
-        status: emailResponse.status
-      });
-
+    const EmailMessagObject={
+      clientId,
+      batchId,
+      messageId:emailResponse.id.slice(1,-1),
+      subject,
+      body:emailBody,
+      recieverEmail,
+      senderEmail: 'Legal Doc Sharing',
+      status: emailResponse.status
+    };
+    const message = await MongoService.createEmailMessage(EmailMessagObject);
+   console.log("email sent and saved in db",message);
     res.status(200).json({ 
       message: 'Email sent successfully',
-      processedMessage: customMessage
     });
   } catch (error) {
     console.error('Error in shareByEmail:', error);

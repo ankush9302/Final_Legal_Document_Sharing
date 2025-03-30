@@ -1,37 +1,35 @@
 require('dotenv').config();
-const nodemailer = require('nodemailer');
+const formData = require('form-data');
+const Mailgun = require('mailgun.js');
 
-const transporter = nodemailer.createTransport({
-  service: 'Mailgun',
-  auth: {
-    user: process.env.MAILGUN_USER,  // Your Mailgun user
-    pass: process.env.MAILGUN_PASSWORD,  // Your Mailgun password or API key
-  },
+const mailgun = new Mailgun(formData);
+const mg = mailgun.client({
+    username:'api',
+    key: process.env.MAILGUN_API_KEY, // Use API Key instead of SMTP credentials
 });
 
-// Function to send emails
 const sendEmail = async (toEmail, subject, textBody, htmlBody) => {
-  const mailOptions = {
-    from: process.env.SENDER_EMAIL_ID,
-    to: toEmail,
-    subject: subject,
-    text: textBody,
-    html: htmlBody,
-  };
+    try {
+        const info = await mg.messages.create(process.env.MAILGUN_DOMAIN, {
+            from: process.env.SENDER_EMAIL_ID,
+            to: toEmail,
+            subject: subject,
+            text: textBody,
+            html: htmlBody,
+            'o:tracking-opens': 'true', // Enable open tracking
+             'o:tracking-clicks': 'true'//enable click tracking for links in email
+        });
 
-  try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log(`Email sent: ${info.response}------------------------------------------------------------`);
-    console.log(info);
-    console.log("---------------------------------------------------------------------------------------");
-    return { status: 'sent', id: info.messageId }; // Return message ID
-  } catch (error) {
-    console.error(`Error sending email: ${error}`);
-    return { status: 'failed', error: error.message }; // Return error
-  }
+        console.log(`Email sent: ${info.id}`);
+        return { status: 'sent', id: info.id };
+    } catch (error) {
+        console.error(`Error sending email: ${error.message}`);
+        return { status: 'failed', error: error.message };
+    }
 };
 
 module.exports = { sendEmail };
+
 
 
 //problem--- send 100s msg
