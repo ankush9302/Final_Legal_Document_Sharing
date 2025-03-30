@@ -9,8 +9,8 @@ const WhatsappMessageSchema = new Schema(
     message: { type: String, required: true }, 
     status: {
       type: String,
-      enum: ["Sent", "Delivered", "Read", "Failed"], // Updated valid statuses
-      default: "Sent",
+      enum: ["sent", "delivered", "read", "failed"], // Updated valid statuses
+      default: "sent",
       required: true,
     },
   },

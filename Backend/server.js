@@ -42,14 +42,14 @@ app.use('/api/auth', (req, res, next) => {
   next();
 }, authRoutes);
 
-app.get('/api/document-links', getDocumentLinks);
+app.get('/api/document-links', getDocumentLinks);  //change karna hai
 
 // app.use('/api/subadmins', (req, res, next) => {
 //   console.log(`Received ${req.method} request to ${req.originalUrl}`);
 //   next();
 // }, subadminRoutes);
 
-app.use('/api/share', (req, res, next) => {
+app.use('/api/share/:batchId', (req, res, next) => {
   console.log(`Received ${req.method} request to ${req.originalUrl}`);
   next();
 }, shareRoutes);
