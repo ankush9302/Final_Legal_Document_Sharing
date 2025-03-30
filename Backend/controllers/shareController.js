@@ -4,47 +4,17 @@ const twilioClient = require('../config/twilio');
 const XLSX = require('xlsx');
 const path = require('path');
 const fs = require('fs');
-const MongoService = require('../models/MongoModel')
-// Helper function to process template with client data
+const MongoService = require('../models/MongoModel');
+const loanClient = require('../models/loanClients');
 
 
 // Improved getClientData function with better error handling and logging
-const getClientData = (clientId) => {
+const getClientData = async (clientId) => {
   try {
-    // console.log('Searching for client:', clientId);
 
-    // Read the Excel file
-    const excelPath = path.join(__dirname, '..', 'uploads', 'updated_excel.xlsx');
-    // console.log('Reading Excel file from:', excelPath);
-// 
-    if (!fs.existsSync(excelPath)) {
-      console.error('Excel file not found at:', excelPath);
-      return null;
-    }
+    const client = await loanClient.findOne({ 'clContractId': clientId }).lean();
 
-    const workbook = XLSX.readFile(excelPath);
-    const sheetName = workbook.SheetNames[0];
-    const sheet = workbook.Sheets[sheetName];
-    const clientData = XLSX.utils.sheet_to_json(sheet);
-    const cleanedData = clientData.map((row) => {
-      const cleanedRow = {};
-      Object.keys(row).forEach((key) => {
-    const trimmedKey = key.trim(); // Remove whitespace before and after the name
-    cleanedRow[trimmedKey] = row[key]; // Assign value to cleaned key
-  });
-  return cleanedRow; // Return the transformed row
-    });
-    console.log('Cleaned data:', cleanedData[0]);
-    // clientData = cleanedData;
-
-    // console.log('Total clients in Excel:', clientData.length);
-    // console.log('Client data:', clientData[0]);
-    
-    // Find client by ID
-    const client = cleanedData.find(client => {
-      console.log('Comparing:', client['CL CONTRACT ID'], clientId);
-      return String(client['CL CONTRACT ID']) === String(clientId);
-    });
+    console.log('Cleaned data:', client);
 
     if (!client) {
       console.log('Client not found with ID:', clientId);
@@ -69,12 +39,12 @@ const processTemplate = (template, client) => {
     
     // Replace placeholders with client data
     const processed = processedTemplate
-      .replace(/{{Client_Name}}/g, client['CUSTOMER NAME'] || '')
-      .replace(/{{Loan_Account_Number}}/g, client['CL CONTRACT ID']|| '')
-      .replace(/{{email}}/g, client['BORRWER EMAIL ID'] || '')
-      .replace(/{{customerId}}/g, client['CUSTOMER ID'] || '')
-      .replace(/{{zone}}/g, client['ZONE'] || '')
-      .replace(/{{state}}/g, client['STATE'] || '');
+      .replace(/{{Client_Name}}/g, client['customerName'] || '')
+      .replace(/{{Loan_Account_Number}}/g, client['finalLoanId']|| '')
+      .replace(/{{email}}/g, client['borrowerEmailId'] || '')
+      .replace(/{{customerId}}/g, client['clContractId'] || '')
+      .replace(/{{zone}}/g, client['zone'] || '')
+      .replace(/{{state}}/g, client['state'] || '');
 
     console.log('Processed template:', processed);
     return processed;
@@ -183,7 +153,9 @@ exports.shareBySMS = async (req, res) => {
     const { clientId, documentUrl, messageTemplate } = req.body;
     console.log('Received message template:', messageTemplate); // Debug log
     
-    const client = getClientData(clientId);
+    const client = await getClientData(clientId);
+    console.log("client ka data : " , client['borrowerPhoneNumber']);
+    
     if (!client) {
       return res.status(404).json({ error: 'Client not found' });
     }
@@ -194,7 +166,7 @@ exports.shareBySMS = async (req, res) => {
     await twilioClient.messages.create({
       body: messageBody,
       from: process.env.TWILIO_PHONE_NUMBER,
-      to: `+91${client['BORRWER PHONE NUMBER']}`
+      to: `+91${client.borrowerPhoneNumber}`
     });
 
     res.status(200).json({ 
