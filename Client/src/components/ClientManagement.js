@@ -1,18 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, message } from 'antd';
+import { Table, Button, message, Card, Space, Typography } from 'antd';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
+import BatchSelector from './BatchSelector';
+const { Text } = Typography;
 
 const ClientManagement = () => {
   const [clientData, setClientData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const selectedBatch = useSelector((state) => state.batch);
 
   useEffect(() => {
-    fetchClientData();
-  }, []);
 
-  const fetchClientData = async () => {
+    if (!selectedBatch.pdfUrl || !selectedBatch.excelUrl) {
+      setClientData(() => []);
+      setLoading(() => false);
+      return;
+    }
+    fetchClientData(selectedBatch.batchId);
+  }, [selectedBatch]);
+
+  const fetchClientData = async (batchId) => {
     try {
-      const response = await axios.get('http://localhost:5000/api/document-links');
+      const response = await axios.get(`http://localhost:5000/api/get-clients/${batchId}`);
       // console.log('Raw API response:', response.data); // Log the raw response
       setClientData(response.data);
       setLoading(false);
@@ -24,9 +35,9 @@ const ClientManagement = () => {
   };
 
   const columns = [
-    { 
-      title: 'Customer Name', 
-      dataIndex: 'CUSTOMER NAME', 
+    {
+      title: 'Customer Name',
+      dataIndex: 'CUSTOMER NAME',
       key: 'CUSTOMER NAME',
       render: (text, record) => {
         console.log('Customer Name record:', record); // Log each record
@@ -64,14 +75,46 @@ const ClientManagement = () => {
   return (
     <div>
       <h2>Client Management</h2>
-      <Table
-        dataSource={clientData}
-        columns={columns}
-        rowKey="CUSTOMER ID"
-        loading={loading}
-        scroll={{ x: true }}
-        pagination={{ pageSize: 10 }}
-      />
+
+      {!selectedBatch.batchId ? (
+
+        <>
+          <Card
+            title={
+              <Space>
+                <ExclamationCircleOutlined style={{ color: "#ff4d4f", fontSize: "18px" }} />
+                <Text strong style={{ color: "#ff4d4f" }}>Select a Batch</Text>
+              </Space>
+            }
+            bordered={false}
+            style={{
+              width: "100%",
+              backgroundColor: "#fff2f0",
+              border: "1px solid #ffccc7",
+              borderRadius: "8px",
+              boxShadow: "0 2px 8px rgba(255, 77, 79, 0.2)",
+              padding: "16px",
+            }}
+          >
+            <Text style={{ color: "#a8071a", fontSize: "14px", display: "block", marginBottom: "12px" }}>
+              Please select a batch to share documents securely.
+            </Text>
+            {/* Dropdown Component Goes Here */}
+            <BatchSelector />
+          </Card>
+        </>
+      ) : (
+
+        <Table
+          dataSource={clientData}
+          columns={columns}
+          rowKey="CUSTOMER ID"
+          loading={loading}
+          scroll={{ x: true }}
+          pagination={{ pageSize: 10 }}
+        />
+      )}
+
     </div>
   );
 };

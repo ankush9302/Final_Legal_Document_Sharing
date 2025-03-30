@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
-const { getDocumentLinks } = require('./controllers/documentController');
+const { getBatchClients } = require('./controllers/documentController');
 const shareRoutes = require('./routes/shareRoutes');
 const pdfProcessingRoutes = require('./routes/pdfProcessingRoutes');
 const emailStatsRoutes = require('./routes/emailStatsRoutes');
@@ -42,8 +42,8 @@ app.use('/api/auth', (req, res, next) => {
   // console.log(`Received ${req.method} request to ${req.originalUrl}`);
   next();
 }, authRoutes);
-
-app.get('/api/document-links', getDocumentLinks);
+  
+app.get('/api/get-clients/:batchId', getBatchClients);
 
 // app.use('/api/subadmins', (req, res, next) => {
 //   console.log(`Received ${req.method} request to ${req.originalUrl}`);

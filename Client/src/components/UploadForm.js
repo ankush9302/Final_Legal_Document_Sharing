@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Select, Button, Card, Row, Col, message, Spin } from 'antd';
+import { Form, Select, Button, Card, Row, Col, message, Spin, Typography, Space } from 'antd';
 import axios from 'axios';
 import { shareByEmail, shareByWhatsApp, shareBySMS, shareAll } from '../services/shareService';
+import { useSelector } from 'react-redux';
+import { ExclamationCircleOutlined } from "@ant-design/icons";
+import BatchSelector from './BatchSelector'; // Assuming you have a BatchSelector component
+
+const { Text } = Typography;
 
 const { Option } = Select;
 
@@ -10,19 +15,29 @@ function UploadForm() {
   const [selectedClients, setSelectedClients] = useState([]);
   const [clientData, setClientData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const selectedBatch = useSelector((state) => state.batch);
 
   useEffect(() => {
-    fetchClientData();
-  }, []);
 
-  const fetchClientData = async () => {
+    if (!selectedBatch.pdfUrl || !selectedBatch.excelUrl) {
+      setClientData(() => []);
+      setSelectedClients(() => []);
+      setLoading(() => false);
+      return;
+    }
+    fetchClientData(selectedBatch.batchId);
+  }, [selectedBatch]);
+
+  const fetchClientData = async (batchId) => {
     try {
-      const response = await axios.get('http://localhost:5000/api/document-links');
+      setLoading(() => true)
+      const response = await axios.get(`http://localhost:5000/api/get-clients/${batchId}`);
       setClientData(response.data);
-      setLoading(false);
     } catch (error) {
       console.error('Error fetching client data:', error);
       message.error('Failed to load client data');
+    }
+    finally {
       setLoading(false);
     }
   };
@@ -41,13 +56,19 @@ function UploadForm() {
       return;
     }
 
+    if (selectedBatch.batchId === '') {
+      message.error('Please select a Batch');
+      return;
+    }
+
     try {
       for (const clientId of selectedClients) {
         const client = clientData.find(c => c['CUSTOMER ID'] === clientId);
         await shareFunction(
-          client['CUSTOMER ID'], 
+          client['CUSTOMER ID'],
           client.documentLink,
-          localStorage.getItem('messageTemplate')
+          localStorage.getItem('messageTemplate'),
+          selectedBatch.batchId
         );
       }
       message.success(`Documents shared via ${method}`);
@@ -62,14 +83,18 @@ function UploadForm() {
       message.error('Please select at least one client');
       return;
     }
-
+    if (selectedBatch.batchId === '') {
+      message.error('Please select a Batch');
+      return;
+    }
     try {
       for (const clientId of selectedClients) {
         const client = clientData.find(c => c['CUSTOMER ID'] === clientId);
         await shareAll(
-          client['CUSTOMER ID'], 
+          client['CUSTOMER ID'],
           client.documentLink,
-          localStorage.getItem('messageTemplate')
+          localStorage.getItem('messageTemplate'),
+          selectedBatch.batchId
         );
       }
       message.success('Documents shared via all channels');
@@ -83,44 +108,79 @@ function UploadForm() {
     <Spin spinning={loading}>
       <div>
         <h2>Share Document</h2>
-        <Row gutter={[16, 16]}>
-          <Col span={24}>
-            <Card title="Select Client and Share">
-              <Form form={form} layout="vertical">
-                <Form.Item name="clients" label="Select Clients">
-                  <Select
-                    mode="multiple"
-                    style={{ width: '100%' }}
-                    placeholder="Select clients"
-                    onChange={handleClientSelection}
-                    value={selectedClients}
-                  >
-                    <Option key="all" value="all">Select All</Option>
-                    {clientData.map(client => (
-                      <Option key={client['CUSTOMER ID']} value={client['CUSTOMER ID']}>
-                        {client['CUSTOMER NAME']}
-                      </Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-                <Form.Item>
-                  <Button onClick={() => handleShare(shareByEmail, 'email')} type="primary" style={{ marginRight: 8 }}>
-                    Share by Email
-                  </Button>
-                  <Button onClick={() => handleShare(shareByWhatsApp, 'WhatsApp')} type="primary" style={{ marginRight: 8 }}>
-                    Share by WhatsApp
-                  </Button>
-                  <Button onClick={() => handleShare(shareBySMS, 'SMS')} type="primary" style={{ marginRight: 8 }}>
-                    Share by SMS
-                  </Button>
-                  <Button onClick={handleShareAll} type="primary">
-                    Share All
-                  </Button>
-                </Form.Item>
-              </Form>
+
+        {!selectedBatch.batchId ? (
+          <>
+            <Card
+              title={
+                <Space>
+                  <ExclamationCircleOutlined style={{ color: "#ff4d4f", fontSize: "18px" }} />
+                  <Text strong style={{ color: "#ff4d4f" }}>Select a Batch</Text>
+                </Space>
+              }
+              bordered={false}
+              style={{
+                width: "100%",
+                backgroundColor: "#fff2f0",
+                border: "1px solid #ffccc7",
+                borderRadius: "8px",
+                boxShadow: "0 2px 8px rgba(255, 77, 79, 0.2)",
+                padding: "16px",
+              }}
+            >
+              <Text style={{ color: "#a8071a", fontSize: "14px", display: "block", marginBottom: "12px" }}>
+                Please select a batch to share documents securely.
+              </Text>
+              {/* Dropdown Component Goes Here */}
+              <BatchSelector />
             </Card>
-          </Col>
-        </Row>
+          </>
+        ) :
+
+          (
+            <Row gutter={[16, 16]}>
+              <Col span={24}>
+                <Card title="Select Client and Share">
+                  <Form form={form} layout="vertical">
+                    <Form.Item name="clients" label="Select Clients">
+                      <Select
+                        mode="multiple"
+                        style={{ width: '100%' }}
+                        placeholder="Select clients"
+                        onChange={handleClientSelection}
+                        value={selectedClients}
+                      >
+                        <Option key="all" value="all">Select All</Option>
+                        {clientData.map(client => (
+                          <Option key={client['CUSTOMER ID']} value={client['CUSTOMER ID']}>
+                            {client['CUSTOMER NAME']}
+                          </Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                    <Form.Item>
+                      <Button onClick={() => handleShare(shareByEmail, 'email')} type="primary" style={{ marginRight: 8 }}>
+                        Share by Email
+                      </Button>
+                      <Button onClick={() => handleShare(shareByWhatsApp, 'WhatsApp')} type="primary" style={{ marginRight: 8 }}>
+                        Share by WhatsApp
+                      </Button>
+                      <Button onClick={() => handleShare(shareBySMS, 'SMS')} type="primary" style={{ marginRight: 8 }}>
+                        Share by SMS
+                      </Button>
+                      <Button onClick={handleShareAll} type="primary">
+                        Share All
+                      </Button>
+                    </Form.Item>
+                  </Form>
+                </Card>
+              </Col>
+            </Row>
+          )
+
+        }
+
+
       </div>
     </Spin>
   );

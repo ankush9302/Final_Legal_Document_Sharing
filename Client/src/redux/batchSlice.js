@@ -5,6 +5,7 @@ const initialState = {
     pdfUrl: '',
     excelOriginalName: '',
     excelUrl: '',
+    batchId : '',
 };
 
 export const batchSlice = createSlice({
@@ -16,12 +17,14 @@ export const batchSlice = createSlice({
         state.pdfUrl = action.payload.pdfUrl;
         state.excelOriginalName = action.payload.excelOriginalName;
         state.excelUrl = action.payload.excelUrl;
+        state.batchId = action.payload._id; 
     },
     clearBatch : (state) => {
         state.pdfOriginalName = '';
         state.pdfUrl = '';
         state.excelOriginalName = '';
         state.excelUrl = '';
+        state.batchId = ''; 
     },
   },
 });
