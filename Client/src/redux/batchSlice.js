@@ -1,0 +1,31 @@
+import { createSlice } from '@reduxjs/toolkit';
+
+const initialState = {
+    pdfOriginalName: '',
+    pdfUrl: '',
+    excelOriginalName: '',
+    excelUrl: '',
+};
+
+export const batchSlice = createSlice({
+  name: 'batch',
+  initialState,
+  reducers: {
+    selectBatch: (state, action) => {
+        state.pdfOriginalName = action.payload.pdfOriginalName;
+        state.pdfUrl = action.payload.pdfUrl;
+        state.excelOriginalName = action.payload.excelOriginalName;
+        state.excelUrl = action.payload.excelUrl;
+    },
+    clearBatch : (state) => {
+        state.pdfOriginalName = '';
+        state.pdfUrl = '';
+        state.excelOriginalName = '';
+        state.excelUrl = '';
+    },
+  },
+});
+
+export const { selectBatch , clearBatch } = batchSlice.actions;
+
+export default batchSlice.reducer;
