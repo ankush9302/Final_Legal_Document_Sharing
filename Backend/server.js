@@ -10,7 +10,7 @@ const batchRoutes = require('./routes/batchRoute'); // Route to get all batches
 const http = require('http');
 const WebSocketService = require('./services/websocketService');
 const webhookRoutes = require('./routes/webhookRoutes');
-
+const reports = require('./routes/reportRoutes');
 // Load env vars
 require('dotenv').config();
 
@@ -67,7 +67,7 @@ app.use('/api/email-stats', (req, res, next) => {
 }, emailStatsRoutes);
 
 app.use('/api/batch' , batchRoutes); // Route to get all batches
-
+app.use('/api/reports/',reports);
 app.use('/api/webhooks', webhookRoutes); // Route to listen for incoming webhooks from mailGun 
 
 server.listen(port, () => {

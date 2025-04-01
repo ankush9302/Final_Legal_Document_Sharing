@@ -6,8 +6,11 @@ const webhookController = require("../controllers/Webhook.Controller");
 router.post("/mailgun", webhookController.handleEmailWebhook);
 
 // Route for handling WhatsApp webhook
-router.post("/whatsapp", webhookController.handleWhatsappWebhook);
+// Single route for both verification (GET) and webhooks (POST)
+router.route("/whatsapp")
+  .get(webhookController.handleWhatsappWebhook)  // Verification (GET)
+  .post(webhookController.handleWhatsappWebhook); // Webhook events (POST)
 //to verify
-router.get("/meta", webhookController.verifyWebhook);
+// router.get("/meta", webhookController.verifyWebhook);
 
 module.exports = router;

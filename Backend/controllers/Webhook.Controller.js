@@ -72,52 +72,62 @@ const handleEmailWebhook = async (req, res) => {
  */
 const handleWhatsappWebhook = async (req, res) => {
   try {
-    console.log("WhatsApp Webhook received:", JSON.stringify(req.body, null, 2));
-
-    const entry = req.body.entry?.[0];
-    if (!entry || !entry.changes) {
-      return res.status(400).json({ error: "Invalid webhook payload" });
-    }
-
-    const change = entry.changes[0];
-    const messageId = change.value?.statuses?.[0]?.id;
-    const status = change.value?.statuses?.[0]?.status;
-
-    if (!messageId || !status) {
-      return res.status(400).json({ error: "Missing message ID or status" });
-    }
-
-    let newStatus = null;
-    if (status === "sent") newStatus = "Sent";
-    else if (status === "delivered") newStatus = "Delivered";
-    else if (status === "read") newStatus = "Read";
-    else if (status === "failed") newStatus = "Failed";
-
-    if (!newStatus) return res.status(200).json({ message: "Event ignored" });
-
-    let existingMessage = await WhatsappMessage.findOne({ messageId });
-
-    if (existingMessage) {
-      const existingStatus = existingMessage.status;
-
-      if (STATUS_PRIORITY_WHATSAPP[newStatus] > STATUS_PRIORITY_WHATSAPP[existingStatus]) {
-        existingMessage.status = newStatus;
-        await existingMessage.save();
-        console.log(`Updated WhatsApp message ${messageId} from ${existingStatus} -> ${newStatus}`);
-      } else {
-        console.log(`Ignored status update: ${existingStatus} -> ${newStatus}`);
+    // ===== 1. Handle GET (Meta verification challenge) =====
+    if (req.method === "GET") {
+      const mode = req.query["hub.mode"];
+      const token = req.query["hub.verify_token"];
+      const challenge = req.query["hub.challenge"];
+    
+      if (mode && token) {
+        if (mode === "subscribe" && token === VERIFY_TOKEN) {
+          console.log("✅ Webhook Verified Successfully");
+          return res.status(200).send(challenge); // Meta expects this challenge response
+        } else {
+          console.error("❌ Verification failed. Invalid token.");
+          return res.sendStatus(403); // Forbidden
+        }
       }
-    } else {
-      console.log(`No entry found for messageId: ${messageId}`);
-      return res.status(404).json({ message: "WhatsApp message not found in the database" });
     }
 
-    res.status(200).json({ message: "WhatsApp message status updated", existingMessage });
+    // ===== 2. Handle POST (Webhook events) =====
+    console.log("📩 Webhook Event:", JSON.stringify(req.body, null, 2));
+
+    // Validate payload structure
+    const entry = req.body.entry?.[0];
+    if (!entry?.changes) {
+      return res.status(400).json({ error: "Invalid payload structure" });
+    }
+
+    // Process message status updates
+    const statusData = entry.changes[0].value?.statuses?.[0];
+    if (!statusData?.id || !statusData?.status) {
+      return res.status(200).send("OK"); // Acknowledge but ignore
+    }
+
+    const { id: messageId, status, errors } = statusData;
+
+    // Log failed messages
+    if (status === "failed") {
+      console.error("❌ Message failed:", { messageId, error: errors?.[0] });
+    }
+
+    // Update database (example using Mongoose)
+    const existingMessage = await WhatsappMessage.findOne({ messageId });
+    if (existingMessage) {
+      existingMessage.status = status;
+      await existingMessage.save();
+      console.log(`🔄 Updated message ${messageId}: ${status}`);
+    }
+
+    return res.status(200).send("OK"); // Always acknowledge
+
   } catch (error) {
-    console.error(`WhatsApp Webhook error: ${error.message}`);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error("🔥 Webhook error:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
+
+module.exports = { handleWhatsappWebhook };
 
 const VERIFY_TOKEN = process.env.WEBHOOK_VERIFY_TOKEN || "my_secure_token"; // Store in .env
 

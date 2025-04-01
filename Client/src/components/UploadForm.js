@@ -32,6 +32,7 @@ function UploadForm() {
     try {
       setLoading(() => true)
       const response = await axios.get(`http://localhost:5000/api/get-clients/${batchId}`);
+      console.log(response)
       setClientData(response.data);
     } catch (error) {
       console.error('Error fetching client data:', error);
