@@ -6,7 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const MongoService = require('../models/MongoModel');
 const loanClient = require('../models/loanClients');
-const {sendWhatsAppMessage}=require('../services/whatsappService')
+const {sendWhatsAppMessage, sendWhatsAppMessageTwilio}=require('../services/whatsappService')
 const MongooseService=require("../models/MongoModel")
 // Improved getClientData function with better error handling and logging
 const getClientData = async (clientId) => {
@@ -59,14 +59,14 @@ exports.shareByEmail = async (req, res) => {
     const { clientId,batchId } = req.body;
     // console.log('Received request for email sharing:', { clientId, documentUrl });
 
-    // const client = getClientData(clientId);
-    // if (!client) {
-    //   console.error('Client not found:', clientId);
-    //   return res.status(404).json({ 
-    //     error: 'Client not found',
-    //     details: 'Unable to find client data in Excel file'
-    //   });
-    // }
+    const client = await getClientData(clientId);
+    if (!client) {
+      console.error('Client not found:', clientId);
+      return res.status(404).json({ 
+        error: 'Client not found',
+        details: 'Unable to find client data from database'
+      });
+    }
    const documentUrl="https://res.cloudinary.com/duiy6ecai/image/upload/v1743243648/New_Legal_Documents/ewfnpckx07bq0ylqmleq.pdf";
     // const customMessage = processTemplate(messageTemplate, client);
     const emailBody =  'Here is your document from Legal Doc Sharing.';
@@ -76,7 +76,8 @@ exports.shareByEmail = async (req, res) => {
     // console.log('Sending email to:', client['BORRWER EMAIL ID']);
     // console.log('Email body:', emailBody);
     const subject='Document of your Case shared by Legal Doc Sharing';
-    const recieverEmail = 'jayshrikanth@gmail.com';  //hard coding for webhook testing
+    // const recieverEmail = 'jayshrikanth@gmail';  //hard coding for webhook testing
+    const recieverEmail = client['borrowerEmailId']; // Use the email from the client datas
     const emailResponse = await sendEmail(
        recieverEmail,
        subject ,
@@ -124,17 +125,20 @@ exports.shareByWhatsApp = async (req, res) => {
 
     console.log("Sending WhatsApp to:",client.borrowerPhoneNumber);
 
-    const response = await sendWhatsAppMessage(client.borrowerPhoneNumber, messageBody);
-    console.log("Message sent to WhatsApp:", response);
-    const messageId = response?.messages?.[0]?.id || null;
-   const whatsappMessageObject={
-    clientId,
-    batchId,
-    messageId:response.messages[0].id,
-    message:messageBody,
-    status: messageId ? "sent" : "failed",
-   }
-   const messageResult=MongooseService.createWhatsAppMessage(whatsappMessageObject)
+    const response = await sendWhatsAppMessageTwilio(client.borrowerPhoneNumber, messageBody);
+    // console.log("Message sent to WhatsApp:", response);
+
+    //change the logic to save the message in db
+
+  //   const messageId = response?.messages?.[0]?.id || null;
+  //  const whatsappMessageObject={
+  //   clientId,
+  //   batchId,
+  //   messageId:response.messages[0].id,
+  //   message:messageBody,
+  //   status: messageId ? "sent" : "failed",
+  //  }
+  //  const messageResult=MongooseService.createWhatsAppMessage(whatsappMessageObject)
 
     res.status(200).json({
       message: "WhatsApp message sent successfully",
@@ -160,11 +164,14 @@ exports.shareBySMS = async (req, res) => {
     const customMessage = processTemplate(messageTemplate, client);
     const messageBody = `${customMessage}\n\nClick here to view your document: ${documentUrl}`;
 
-    await twilioClient.messages.create({
+    const twilioResponse = await twilioClient.messages.create({
       body: messageBody,
       from: process.env.TWILIO_PHONE_NUMBER,
       to: `+91${client.borrowerPhoneNumber}`
     });
+
+    // console.log('SMS sent:', twilioResponse);
+
 
     res.status(200).json({ 
       message: 'SMS sent successfully',
@@ -181,7 +188,7 @@ exports.shareAll = async (req, res) => {
     const { clientId, documentUrl, messageTemplate } = req.body;
     console.log('Received message template:', messageTemplate); // Debug log
     
-    const client = getClientData(clientId);
+    const client = await getClientData(clientId);
     if (!client) {
       return res.status(404).json({ error: 'Client not found' });
     }
@@ -194,7 +201,7 @@ exports.shareAll = async (req, res) => {
     await Promise.all([
       // Send Email
       sendEmail(
-        client['BORRWER EMAIL ID'],
+        client['borrowerEmailId'],
         'Document of your Case shared by Legal Doc Sharing',
         emailBody,
         htmlBody
@@ -203,13 +210,13 @@ exports.shareAll = async (req, res) => {
       twilioClient.messages.create({
         body: messageBody,
         from: 'whatsapp:+14155238886',
-        to: `whatsapp:+91${client['BORRWER PHONE NUMBER']}`
+        to: `whatsapp:+91${client['borrowerPhoneNumber']}`
       }),
       // Send SMS
       twilioClient.messages.create({
         body: messageBody,
         from: process.env.TWILIO_PHONE_NUMBER,
-        to: `+91${client['BORRWER PHONE NUMBER']}`
+        to: `+91${client['borrowerPhoneNumber']}`
       })
     ]);
 

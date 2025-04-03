@@ -38,12 +38,14 @@ exports.getBatchClients = async (req, res) => {
         return res.status(400).json({ error: 'Batch ID is required.' });
       }
 
-      // const batchClients = await loanClient.find({ batchId: req.params.batchId });
-      const batchClients = await loanClient.find();
+      const batchClients = await loanClient.find({ batchId: req.params.batchId });
+      // const batchClients = await loanClient.find();
       if (!batchClients || batchClients.length === 0) {
         return res.status(404).json({ error: 'No clients found for this batch.' });
       }
       const mappedData = batchClients.map(client => ({
+        clientId : client._id,
+        batchId : client.batchId,
         'CUSTOMER NAME': client.customerName,
         'MOBILE NUMBER': client.borrowerPhoneNumber,
         'EMAIL ID': client.borrowerEmailId,

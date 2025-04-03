@@ -45,7 +45,7 @@ function UploadForm() {
 
   const handleClientSelection = (value) => {
     if (value.includes('all')) {
-      setSelectedClients(clientData.map(client => client['CUSTOMER ID']));
+      setSelectedClients(clientData.map(client => client.clientId));
     } else {
       setSelectedClients(value);
     }
@@ -64,9 +64,9 @@ function UploadForm() {
 
     try {
       for (const clientId of selectedClients) {
-        const client = clientData.find(c => c['CUSTOMER ID'] === clientId);
+        const client = clientData.find(c => c.clientId === clientId);
         await shareFunction(
-          client['CUSTOMER ID'],
+          client.clientId,
           client.documentLink,
           localStorage.getItem('messageTemplate'),
           selectedBatch.batchId
@@ -89,10 +89,20 @@ function UploadForm() {
       return;
     }
     try {
+
+      console.log(selectedBatch.batchId);
+      
+
       for (const clientId of selectedClients) {
-        const client = clientData.find(c => c['CUSTOMER ID'] === clientId);
+        console.log(clientData);
+        
+        const client = clientData.find(c => c.clientId === clientId);
+
+        if(!client) {
+          throw new Error(`Client with ID ${clientId} not found`);
+        }
         await shareAll(
-          client['CUSTOMER ID'],
+          client.clientId,
           client.documentLink,
           localStorage.getItem('messageTemplate'),
           selectedBatch.batchId
@@ -153,7 +163,7 @@ function UploadForm() {
                       >
                         <Option key="all" value="all">Select All</Option>
                         {clientData.map(client => (
-                          <Option key={client['CUSTOMER ID']} value={client['CUSTOMER ID']}>
+                          <Option key={client['clientId']} value={client['clientId']}>
                             {client['CUSTOMER NAME']}
                           </Option>
                         ))}
