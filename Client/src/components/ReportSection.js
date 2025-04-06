@@ -1,66 +1,82 @@
-import React, { useState, useEffect } from 'react';
-import { Table, DatePicker, Select, Row, Col, Card } from 'antd';
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { Table, Tag, Spin, Alert } from 'antd';
+import useReportData from '../hooks/useReportData';
+import BatchSelector from './BatchSelector';
+import BatchNotSelected from './BatchNotSelected';
+import ShowReportStats from './report/ShowReportStats';
 
-const { Option } = Select;
-const { RangePicker } = DatePicker;
+const statusColors = {
+  'Sent': 'blue',
+  'Delivered': 'green',
+  'Opened': 'gold',
+  'Failed': 'red',
+  'Clicked': 'purple',
+  'Not Sent': 'default',
+};
 
-const ReportSection = () => {
-  const [reportData, setReportData] = useState([]);
-  const [dateRange, setDateRange] = useState(null);
-  const [reportType, setReportType] = useState('all');
+const columns = [
+  {
+    title: 'Customer Name',
+    dataIndex: 'customerName',
+    key: 'customerName',
+  },
+  {
+    title: 'Email',
+    dataIndex: 'borrowerEmailId',
+    key: 'borrowerEmailId',
+  },
+  {
+    title: 'Phone',
+    dataIndex: 'borrowerPhoneNumber',
+    key: 'borrowerPhoneNumber',
+  },
+  {
+    title: 'WhatsApp Status',
+    dataIndex: 'whatsappStatus',
+    key: 'whatsappStatus',
+    render: (status) => <Tag color={statusColors[status] || 'default'}>{status}</Tag>,
+  },
+  {
+    title: 'Email Status',
+    dataIndex: 'emailStatus',
+    key: 'emailStatus',
+    render: (status) => <Tag color={statusColors[status] || 'default'}>{status}</Tag>,
+  },
+  {
+    title: 'SMS Status',
+    dataIndex: 'smsStatus',
+    key: 'smsStatus',
+    render: (status) => <Tag color={statusColors[status] || 'default'}>{status}</Tag>,
+  },
+];
 
-  useEffect(() => {
-    fetchReportData();
-  }, [dateRange, reportType]);
+const ReportTable = () => {
+  const selectedBatch = useSelector((state) => state.batch);
+  const batchId = selectedBatch?.batchId;
 
-  const fetchReportData = async () => {
-    try {
-      const response = await fetch(`/api/report?startDate=${dateRange?.[0]}&endDate=${dateRange?.[1]}&type=${reportType}`);
-      const data = await response.json();
-      setReportData(data);
-    } catch (error) {
-      console.error('Error fetching report data:', error);
-    }
-  };
+  const { data, loading, error } = useReportData(batchId);
 
-  const columns = [
-    { title: 'Date', dataIndex: 'date', key: 'date' },
-    { title: 'Client', dataIndex: 'client', key: 'client' },
-    { title: 'Document', dataIndex: 'document', key: 'document' },
-    { title: 'Method', dataIndex: 'method', key: 'method' },
-    { title: 'Status', dataIndex: 'status', key: 'status' },
-  ];
+  if (!batchId) {
+    return <BatchNotSelected/>;
+  }
+
+  if (loading) return <Spin tip="Loading report..." />;
+  if (error) return <Alert message="Error" description={error} type="error" showIcon />;
 
   return (
-    <div>
-      <h2>Report Section</h2>
-      <Row gutter={[16, 16]}>
-        <Col span={12}>
-          <Card title="Report Filters">
-            <RangePicker
-              style={{ width: '100%', marginBottom: 16 }}
-              onChange={(dates) => setDateRange(dates)}
-            />
-            <Select
-              style={{ width: '100%' }}
-              placeholder="Select report type"
-              onChange={(value) => setReportType(value)}
-            >
-              <Option value="all">All Reports</Option>
-              <Option value="email">Email Reports</Option>
-              <Option value="whatsapp">WhatsApp Reports</Option>
-              <Option value="sms">SMS Reports</Option>
-            </Select>
-          </Card>
-        </Col>
-        <Col span={24}>
-          <Card title="Report Data">
-            <Table dataSource={reportData} columns={columns} />
-          </Card>
-        </Col>
-      </Row>
-    </div>
+    <>
+
+    <ShowReportStats data={data}/>
+
+    <Table
+      dataSource={data}
+      columns={columns}
+      rowKey="_id"
+      pagination={{ pageSize: 10 }}
+      />
+      </>
   );
 };
 
-export default ReportSection;
+export default ReportTable;
