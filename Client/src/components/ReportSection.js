@@ -70,7 +70,7 @@ const ReportTable = () => {
     return data.map((item, index) => ({
       "SNo": item.slNo,
       "Customer Name": item.customerName,
-      "Borrower Email ID": item.borrowerEmailId,
+      "Borrower Email ID": item.borrowerEmailId, 
       "Final Loan Id":item.finalLoanId,
       "Loan Amount": item.loanAmount,
       "Borrower Phone Number":item.borrowerPhoneNumber,
