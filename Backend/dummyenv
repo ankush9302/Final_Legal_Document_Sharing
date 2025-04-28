@@ -1,0 +1,42 @@
+JWT_SECRET=""
+PORT=5000
+
+CLOUDINARY_CLOUD_NAME=""
+CLOUDINARY_API_KEY=""
+CLOUDINARY_API_SECRET=""
+
+TWILIO_ACCOUNT_SID="" 
+TWILIO_APIKEY_SID=""
+TWILIO_APIKEY_SECRET=""
+TWILIO_AUTH_TOKEN=""
+RECOVERY_CODE_TWILIO=""
+NUMBER=""
+TWILIO_PHONE_NUMBER=""
+
+#now these credentials are of no use as we are not usign smtp and we are using api of mailgun
+SENDER_EMAIL_ID="" 
+SENDER_EMAIL_PASSWORD=""
+#if you want to use cloud db uncomment following line and comment line below this line
+# MONGO_URI="your onlie mongo cluster link"
+
+MONGO_URI=mongodb://localhost:27017/legal_doc_sharing
+MAILGUN_API_KEY=""
+
+
+MAILGUN_WEBHOOK_SIGNING_KEY=""
+Mailgunpublickey=""
+MAILGUN_DOMAIN=""
+SENDING_API_KEY=""
+EMAIL_TEST_MODE=""
+MAILGUN_USER=""
+MAILGUN_PASSWORD=""
+BASE_URL=""
+
+# Meta API Credentials
+WHATSAPP_ACCESS_TOKEN=""
+WHATSAPP_PHONE_NUMBER_ID=""
+WHATSAPP_BUSINESS_ACCOUNT_ID=""
+WHATSAPP_API_VERSION=v18.0   # or latest version available
+
+# Webhook Configuration (Optional but Important)
+WEBHOOK_VERIFY_TOKEN=""  #for whatsapp webhook verying
