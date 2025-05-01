@@ -1,30 +1,36 @@
 require('dotenv').config();
-const nodemailer = require('nodemailer');
+const formData = require('form-data');
+const Mailgun = require('mailgun.js');
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail', // Can be replaced with any email service (like SendGrid, Mailgun, Amazon SES)
-  auth: {
-    user: process.env.SENDER_EMAIL_ID,  // Your email
-      pass: process.env.SENDER_EMAIL_PASSWORD,  // Your email password or app-specific password
-  },
+const mailgun = new Mailgun(formData);
+const mg = mailgun.client({
+    username:'api',
+    key: process.env.MAILGUN_API_KEY, // Use API Key instead of SMTP credentials
 });
 
-// Function to send emails
 const sendEmail = async (toEmail, subject, textBody, htmlBody) => {
-  const mailOptions = {
-    from: process.env.SENDER_EMAIL_ID,  // Sender address from env variable
-    to: toEmail,                        // Recipient's email address
-    subject: subject,                   // Email subject
-    text: textBody,                     // Plaintext body (optional)
-    html: htmlBody,                     // HTML body (optional)
-  };
+    try {
+        const info = await mg.messages.create(process.env.MAILGUN_DOMAIN, {
+            from: process.env.SENDER_EMAIL_ID,
+            to: toEmail,
+            subject: subject,
+            text: textBody,
+            html: htmlBody,
+            'o:tracking-opens': 'true', // Enable open tracking
+             'o:tracking-clicks': 'true'//enable click tracking for links in email
+        });
 
-  try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log(`Email sent: ${info.response}`);
-  } catch (error) {
-    console.error(`Error sending email: ${error}`);
-  }
+        console.log(`Email sent: ${info.id}`);
+        return { status: 'sent', id: info.id };
+    } catch (error) {
+        console.error(`Error sending email: ${error.message}`);
+        return { status: 'failed', error: error.message };
+    }
 };
 
 module.exports = { sendEmail };
+
+
+
+//problem--- send 100s msg
+//

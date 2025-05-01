@@ -15,6 +15,7 @@ import ExcelUpload from './components/ExcelUpload';
 import PDFUploadAndProcess from './components/PDFUploadAndProcess';
 import MessageEditor from './components/MessageEditor';
 import Profile from './components/Profile';
+import EmailStatus from './components/EmailStatus';
 
 function App() {
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
@@ -44,6 +45,7 @@ function App() {
                   {/* <Route path="/profile" element={<Profile />} /> */}
                   {/* upper ke routes working hai */}
                   <Route path="/report" element={<ReportSection />} />
+                  <Route path="/email-status" element={<EmailStatus />} />
                 </Routes>
               </DefaultLayout>
             ) : (

@@ -1,66 +1,104 @@
-import React, { useState, useEffect } from 'react';
-import { Table, DatePicker, Select, Row, Col, Card } from 'antd';
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { Table, Tag, Spin, Alert,Button} from 'antd';
+import useReportData from '../hooks/useReportData';
+import BatchSelector from './BatchSelector';
+import BatchNotSelected from './BatchNotSelected';
+import ShowReportStats from './report/ShowReportStats';
+import { exportToExcel, exportToCSV } from './exportToFile';
 
-const { Option } = Select;
-const { RangePicker } = DatePicker;
+const statusColors = {
+  'Sent': 'blue',
+  'Delivered': 'green',
+  'Opened': 'gold',
+  'Failed': 'red',
+  'Clicked': 'purple',
+  'Not Sent': 'default',
+};
 
-const ReportSection = () => {
-  const [reportData, setReportData] = useState([]);
-  const [dateRange, setDateRange] = useState(null);
-  const [reportType, setReportType] = useState('all');
+const columns = [
+  {
+    title: 'Customer Name',
+    dataIndex: 'customerName',
+    key: 'customerName',
+  },
+  {
+    title: 'Email',
+    dataIndex: 'borrowerEmailId',
+    key: 'borrowerEmailId',
+  },
+  {
+    title: 'Phone',
+    dataIndex: 'borrowerPhoneNumber',
+    key: 'borrowerPhoneNumber',
+  },
+  {
+    title: 'WhatsApp Status',
+    dataIndex: 'whatsappStatus',
+    key: 'whatsappStatus',
+    render: (status) => <Tag color={statusColors[status] || 'default'}>{status}</Tag>,
+  },
+  {
+    title: 'Email Status',
+    dataIndex: 'emailStatus',
+    key: 'emailStatus',
+    render: (status) => <Tag color={statusColors[status] || 'default'}>{status}</Tag>,
+  },
+  {
+    title: 'SMS Status',
+    dataIndex: 'smsStatus',
+    key: 'smsStatus',
+    render: (status) => <Tag color={statusColors[status] || 'default'}>{status}</Tag>,
+  },
+];
 
-  useEffect(() => {
-    fetchReportData();
-  }, [dateRange, reportType]);
+const ReportTable = () => {
+  const selectedBatch = useSelector((state) => state.batch);
+  const batchId = selectedBatch?.batchId;
 
-  const fetchReportData = async () => {
-    try {
-      const response = await fetch(`/api/report?startDate=${dateRange?.[0]}&endDate=${dateRange?.[1]}&type=${reportType}`);
-      const data = await response.json();
-      setReportData(data);
-    } catch (error) {
-      console.error('Error fetching report data:', error);
-    }
+  const { data, loading, error } = useReportData(batchId);
+   
+  if (!batchId) {
+    return <BatchNotSelected/>;
+  }
+  console.log("the data that we got is",data)
+  if (loading) return <Spin tip="Loading report..." />;
+  if (error) return <Alert message="Error" description={error} type="error" showIcon />;
+
+  const formatDataForExport = () => {
+   
+    return data.map((item, index) => ({
+      "SNo": item.slNo,
+      "Customer Name": item.customerName,
+      "Borrower Email ID": item.borrowerEmailId, 
+      "Final Loan Id":item.finalLoanId,
+      "Loan Amount": item.loanAmount,
+      "Borrower Phone Number":item.borrowerPhoneNumber,
+      " Email Status": item.emailStatus || 'N/A',
+      "WhatsApp Status": item.whatsappStatus || 'N/A',
+      "SMS Status": item.smsStatus || 'N/A',
+    }));
   };
 
-  const columns = [
-    { title: 'Date', dataIndex: 'date', key: 'date' },
-    { title: 'Client', dataIndex: 'client', key: 'client' },
-    { title: 'Document', dataIndex: 'document', key: 'document' },
-    { title: 'Method', dataIndex: 'method', key: 'method' },
-    { title: 'Status', dataIndex: 'status', key: 'status' },
-  ];
-
   return (
-    <div>
-      <h2>Report Section</h2>
-      <Row gutter={[16, 16]}>
-        <Col span={12}>
-          <Card title="Report Filters">
-            <RangePicker
-              style={{ width: '100%', marginBottom: 16 }}
-              onChange={(dates) => setDateRange(dates)}
-            />
-            <Select
-              style={{ width: '100%' }}
-              placeholder="Select report type"
-              onChange={(value) => setReportType(value)}
-            >
-              <Option value="all">All Reports</Option>
-              <Option value="email">Email Reports</Option>
-              <Option value="whatsapp">WhatsApp Reports</Option>
-              <Option value="sms">SMS Reports</Option>
-            </Select>
-          </Card>
-        </Col>
-        <Col span={24}>
-          <Card title="Report Data">
-            <Table dataSource={reportData} columns={columns} />
-          </Card>
-        </Col>
-      </Row>
-    </div>
+    <>
+
+    <ShowReportStats data={data}/>
+     
+    <div style={{ marginBottom: 16 }}>
+        <Button type="primary" onClick={() => exportToExcel(formatDataForExport())} style={{ marginRight: 8 }}>
+          Export to Excel
+        </Button>
+        <Button onClick={() => exportToCSV(formatDataForExport())}>Export to CSV</Button>
+      </div>
+    <Table
+      dataSource={data}
+      columns={columns}
+      rowKey="_id"
+      pagination={{ pageSize: 10 }}
+      />
+      </>
   );
 };
 
-export default ReportSection;
+export default ReportTable;
