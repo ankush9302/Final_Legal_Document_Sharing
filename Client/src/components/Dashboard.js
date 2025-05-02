@@ -45,7 +45,8 @@ const Dashboard = () => {
     try {
       setLoading(true);
       const [dashboardResponse, emailStatsResponse] = await Promise.all([
-        axios.get('api/email-stats'),
+        // axios.get('api/email-stats'),
+        getEmailStats(),//They were the same route. idk why we have to call them twice and separately when they are the same
         getEmailStats()
       ]);
       setDashboardData({
