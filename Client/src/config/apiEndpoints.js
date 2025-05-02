@@ -1,4 +1,5 @@
-const BASE_URL = process.env.NODE_ENV === 'production' ? "http://3.108.234.81:5000" : "http://localhost:5000";
+const BASE_URL = process.env.REACT_APP_API_URL;
+
 
 export const API_ENDPOINTS = {
     
