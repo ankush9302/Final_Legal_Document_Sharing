@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { API_ENDPOINTS } from '../config/apiEndpoints';
 
 const useReportData = (batchId) => {
   const [data, setData] = useState([]);
@@ -13,7 +14,7 @@ const useReportData = (batchId) => {
       setLoading(true);
       setError(null);
       try {
-        const response = await axios.get(`http://localhost:5000/api/reports/${batchId}/getreport`);
+        const response = await axios.get(API_ENDPOINTS.getReport(batchId));
         setData(response.data); // Assumes API returns the array directly
       } catch (err) {
         setError(err.message || 'Something went wrong');

@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import { setUser } from '../redux/userSlice';
 import axios from 'axios';
 import '../styles/Login.css';
+import { API_ENDPOINTS } from '../config/apiEndpoints';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ const Login = () => {
 
   const onFinish = async (values) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', values);
+      const response = await axios.post(API_ENDPOINTS.login, values);
       dispatch(setUser({ name: response.data.name, role: response.data.role }));
       message.success('Login successful!');
       localStorage.setItem('token', response.data.token);

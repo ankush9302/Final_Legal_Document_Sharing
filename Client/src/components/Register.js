@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import { setUser } from '../redux/userSlice';
 import axios from 'axios';
 import '../styles/Register.css';
+import { API_ENDPOINTS } from '../config/apiEndpoints';
 
 const { Option } = Select;
 
@@ -15,7 +16,7 @@ const Register = () => {
 
   const onFinish = async (values) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/register', values);
+      const response = await axios.post(API_ENDPOINTS.register, values);
       dispatch(setUser({ name: response.data.user.name, role: response.data.user.role }));
       message.success('Registration successful!');
       localStorage.setItem('token', response.data.token);

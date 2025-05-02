@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { API_ENDPOINTS } from '../config/apiEndpoints';
 
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api', // Your server URL
+  baseURL: `${API_ENDPOINTS.BASE_URL}/api`, // Your server URL
 });
 
 export const uploadDocument = (formData) => {

@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import BatchSelector from './BatchSelector';
+import { API_ENDPOINTS } from '../config/apiEndpoints';
 const { Text } = Typography;
 
 const ClientManagement = () => {
@@ -23,7 +24,7 @@ const ClientManagement = () => {
 
   const fetchClientData = async (batchId) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/get-clients/${batchId}`);
+      const response = await axios.get(API_ENDPOINTS.getClients(batchId));
       // console.log('Raw API response:', response.data); // Log the raw response
       setClientData(response.data);
       setLoading(false);

@@ -5,6 +5,7 @@ import { shareByEmail, shareByWhatsApp, shareBySMS, shareAll } from '../services
 import { useSelector } from 'react-redux';
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import BatchSelector from './BatchSelector'; // Assuming you have a BatchSelector component
+import { API_ENDPOINTS } from '../config/apiEndpoints';
 
 const { Text } = Typography;
 
@@ -31,7 +32,7 @@ function UploadForm() {
   const fetchClientData = async (batchId) => {
     try {
       setLoading(() => true)
-      const response = await axios.get(`http://localhost:5000/api/get-clients/${batchId}`);
+      const response = await axios.get(API_ENDPOINTS.getClients(batchId));
       console.log(response)
       setClientData(response.data);
     } catch (error) {

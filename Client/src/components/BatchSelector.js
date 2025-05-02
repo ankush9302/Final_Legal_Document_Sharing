@@ -4,6 +4,7 @@ import { FilePdfOutlined, FileExcelOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { selectBatch , clearBatch} from "../redux/batchSlice";
+import { API_ENDPOINTS } from "../config/apiEndpoints";
 
 const { Text } = Typography;
 
@@ -15,7 +16,7 @@ const BatchSelector = () => {
   useEffect(() => {
     const fetchBatches = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/batch/get-batches"); // Replace with actual API
+        const response = await axios.get(API_ENDPOINTS.getBatches); // Replace with actual API
         setBatches(response.data);
       } catch (error) {
         console.error("Error fetching batches:", error);

@@ -35,14 +35,14 @@ const DefaultLayout = ({ children }) => {
 	const adminMenu = [
 		{ key: '/dashboard', icon: <HomeOutlined />, label: 'Home' },
 		{ key: '/share-documents', icon: <UploadOutlined />, label: 'Share Documents' },
-		{ key: '/subadmin-management', icon: <UserSwitchOutlined />, label: 'Manage SubAdmin' },
+		// { key: '/subadmin-management', icon: <UserSwitchOutlined />, label: 'Manage SubAdmin' },
 		{ key: '/clients', icon: <TeamOutlined />, label: 'Manage Clients' },
 			{ key: '/report', icon: <BarChartOutlined />, label: 'View Reports' },
-		{ key: '/settings', icon: <SettingOutlined />, label: 'Settings' },
+		// { key: '/settings', icon: <SettingOutlined />, label: 'Settings' },
 		{ key: '/profile', icon: <UserOutlined />, label: 'Profile' },
-		{ key: '/city-management', icon: <EnvironmentOutlined />, label: 'Manage Cities' },
+		// { key: '/city-management', icon: <EnvironmentOutlined />, label: 'Manage Cities' },
 		{ key: '/subscription', icon: <CreditCardOutlined />, label: 'Subscription' },
-		{ key: '/excel-upload', icon: <FileExcelOutlined />, label: 'Excel Upload' },
+		// { key: '/excel-upload', icon: <FileExcelOutlined />, label: 'Excel Upload' },
 		{ key: '/pdf-processing', icon: <FilePdfOutlined />, label: 'PDF Processing' },
 		{ key: '/message-editor', icon: <EditOutlined />, label: 'Message Editor' },
 	];
