@@ -41,7 +41,7 @@ const DefaultLayout = ({ children }) => {
 		// { key: '/settings', icon: <SettingOutlined />, label: 'Settings' },
 		{ key: '/profile', icon: <UserOutlined />, label: 'Profile' },
 		// { key: '/city-management', icon: <EnvironmentOutlined />, label: 'Manage Cities' },
-		{ key: '/subscription', icon: <CreditCardOutlined />, label: 'Subscription' },
+		// { key: '/subscription', icon: <CreditCardOutlined />, label: 'Subscription' },
 		// { key: '/excel-upload', icon: <FileExcelOutlined />, label: 'Excel Upload' },
 		{ key: '/pdf-processing', icon: <FilePdfOutlined />, label: 'PDF Processing' },
 		{ key: '/message-editor', icon: <EditOutlined />, label: 'Message Editor' },

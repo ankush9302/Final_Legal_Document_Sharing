@@ -50,8 +50,8 @@ const sendWhatsAppMessageTwilio = async (phoneNumber, messageBody) => {
 
       return twilioResponse;
   } catch (error) {
-    console.error("WhatsApp API Error:", error.response?.data || error);
-    throw new Error("Failed to send WhatsApp message");
+    console.error("Twilio whatsapp error : ", error);
+    throw error;
   }
 };
 

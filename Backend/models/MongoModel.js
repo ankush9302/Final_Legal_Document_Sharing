@@ -2,6 +2,7 @@ const loanClient=require("./loanClients")
 const Batch = require('./Batches')
 const EmailMessage = require('./EmailMessage')
 const WhatsAppMessage=require('./WhatsappMessage')
+const SmsMessage=require('./smsMessage')
  class MongooseService {
     constructor() {
         this.connect();
@@ -99,6 +100,12 @@ const WhatsAppMessage=require('./WhatsappMessage')
         console.log("Saved WhatsApp to db");
         return result;
         
+    }
+    static async createSmsMessage(smsMessageObject){
+        const smsMessage = new SmsMessage(smsMessageObject);
+        const result=await smsMessage.save();
+        console.log("Saved SMS to db");
+        return result;  
     }
 }
 module.exports = MongooseService;

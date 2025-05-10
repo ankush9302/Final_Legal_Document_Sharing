@@ -8,8 +8,8 @@ import {
 
 const { Title } = Typography;
 
-const statusOptions = ['Not Sent', 'Sent', 'Delivered', 'Opened', 'Clicked', 'Failed'];
 
+//This has to be changed.
 const getStatusCount = (data, field, status) =>
   data.filter((item) => item[field]?.toLowerCase() === status.toLowerCase()).length;
 
@@ -31,8 +31,16 @@ const formatChannelTitle = (channel) => {
   }
 };
 
+//data is an array of objects, each object representing a record with status fields for each User
 const ShowReportStats = ({ data }) => {
   const channels = ['emailStatus', 'whatsappStatus', 'smsStatus'];
+
+  const channelStatus = {
+    emailStatus: ['sent', 'delivered', 'opened', 'failed','clicked'],
+    whatsappStatus: ["queued" , "sent", "delivered", "read", "failed"],
+    smsStatus: ["queued" , "sent", "delivered", "read", "failed"],
+  }
+  
 
   return (
     <div style={{ padding: '24px' }}>
@@ -42,7 +50,7 @@ const ShowReportStats = ({ data }) => {
         <div key={channel} style={{ marginTop: 24 }}>
           <Title level={4}>{formatChannelTitle(channel)}</Title>
           <Row gutter={[16, 16]}>
-            {statusOptions.map((status) => (
+            {channelStatus[channel].map((status) => (
               <Col xs={24} sm={12} md={8} lg={6} xl={4} key={status}>
                 <Card
                   bordered={false}

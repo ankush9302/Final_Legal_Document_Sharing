@@ -45,9 +45,9 @@ const MessageEditor = ({ onSave }) => {
       <Button type="primary" onClick={handleSave} style={{ marginTop: 16, marginRight: 8 }}>
         Save Template
       </Button>
-      <Button onClick={handleUseTemplate} style={{ marginTop: 16 }}>
+      {/* <Button onClick={handleUseTemplate} style={{ marginTop: 16 }}>
         Use Template
-      </Button>
+      </Button> */}
     </div>
   );
 };
