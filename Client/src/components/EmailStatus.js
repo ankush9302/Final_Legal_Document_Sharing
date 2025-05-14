@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Tabs, Button, message } from 'antd';
 import axios from 'axios';
-import websocketService from '../services/websocketService';
 
 const { TabPane } = Tabs;
 

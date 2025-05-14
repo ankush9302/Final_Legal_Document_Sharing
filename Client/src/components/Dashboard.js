@@ -29,7 +29,7 @@ const Dashboard = () => {
   useEffect(() => {
     fetchDashboardData();
 
-    websocketService.connect();
+    // websocketService.connect();
 
     const unsubscribe = websocketService.subscribe((emailStats) => {
       setDashboardData(prevData => ({

@@ -22,4 +22,9 @@ router.post('/all', (req, res) => {
     shareController.shareAll(req, res);
 });
 
+router.post('/share-entire-batch', (req, res) => {
+    console.log('Share entire batch route hit:', req.body , req.params);
+    shareController.shareEntireBatch(req, res);
+});
+
 module.exports = router;

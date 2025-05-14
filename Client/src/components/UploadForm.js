@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import BatchSelector from './BatchSelector'; // Assuming you have a BatchSelector component
 import { API_ENDPOINTS } from '../config/apiEndpoints';
+import JobStatusCard from './job-status/JobStatusCard';
 
 const { Text } = Typography;
 
@@ -92,14 +93,14 @@ function UploadForm() {
     try {
 
       console.log(selectedBatch.batchId);
-      
+
 
       for (const clientId of selectedClients) {
         console.log(clientData);
-        
+
         const client = clientData.find(c => c.clientId === clientId);
 
-        if(!client) {
+        if (!client) {
           throw new Error(`Client with ID ${clientId} not found`);
         }
         await shareAll(
@@ -115,6 +116,31 @@ function UploadForm() {
       message.error('Failed to share documents via all channels');
     }
   };
+
+  const shareEntireBatch = async () => {
+    if (!selectedBatch.batchId) {
+      message.error('Please select a Batch');
+      return;
+    }
+    try {
+      const response = await axios.post(API_ENDPOINTS.shareEntireBatch(selectedBatch.batchId), {
+        batchId: selectedBatch.batchId,
+        messageTemplate: localStorage.getItem('messageTemplate')
+      });
+      console.log(response);
+      message.success('Batch added for processing');
+    } catch (error) {
+
+      if(error.response && error.response.data?.message){
+        message.error(error.response.data.message);
+      }
+      else{
+        console.error('Error sharing batch:', error);
+        message.error('Failed to share batch');
+      }
+
+    }
+  }
 
   return (
     <Spin spinning={loading}>
@@ -184,15 +210,25 @@ function UploadForm() {
                         Share All
                       </Button>
                     </Form.Item>
+                    <Form.Item>
+                      <Button onClick={shareEntireBatch} type="primary">
+                        Share Entire Batch
+                      </Button>
+                    </Form.Item>
                   </Form>
                 </Card>
               </Col>
             </Row>
           )
-
         }
 
-
+        <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+          <Col span={24}>
+            <Card title="Job Status">
+              <JobStatusCard />
+            </Card>
+          </Col>
+        </Row>
       </div>
     </Spin>
   );

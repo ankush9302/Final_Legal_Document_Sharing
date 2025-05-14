@@ -8,6 +8,9 @@ const MongoService = require('../models/MongoModel');
 const loanClient = require('../models/loanClients');
 const { sendWhatsAppMessage, sendWhatsAppMessageTwilio } = require('../services/whatsappService')
 const MongooseService = require("../models/MongoModel");
+const Job = require('../models/Job');
+const Batch = require('../models/Batches');
+const { addToBatchProcessQueue } = require('../process-queue/batchProcessQueue');
 
 // Improved getClientData function with better error handling and logging
 const getClientData = async (clientId) => {
@@ -372,3 +375,57 @@ exports.shareAll = async (req, res) => {
     res.status(500).json({ error: 'Failed to share document via all channels' });
   }
 };
+
+exports.shareEntireBatch = async (req, res) => {
+  try{
+    
+    //find all the clients in the batch
+
+    const { messageTemplate , batchId } = req.body;
+    // const { batchId } = req.params
+
+    const batchDoc = await Batch.findById(batchId);
+    console.log(req.params);
+    
+    if (!batchDoc) {
+      return res.status(404).json({ error: 'Batch not found' });
+    }
+    const clientsCount = await loanClient.countDocuments({ batchId: batchId });
+    if (!clientsCount) {
+      return res.status(404).json({ error: 'No clients found in this batch' });
+    }
+
+    const count = await Job.countDocuments({
+      status: { $in: ['queued', 'running'] }
+    });
+    if (count > 0) {
+      return res.status(400).json({ message: 'Another batch is already being processed' });
+    }    
+
+    const jobDoc = new Job({
+      batchId: batchId,
+      subject: "Document of your Case shared by Legal Doc Sharing",
+      body: messageTemplate,
+      status: "queued",
+      clientsTotal: clientsCount,
+
+      pdfOriginalName: batchDoc.pdfOriginalName,
+      pdfUrl: batchDoc.pdfUrl,
+      excelOriginalName: batchDoc.excelOriginalName,
+      excelUrl: batchDoc.excelUrl,
+    })    
+    await jobDoc.save();
+
+    addToBatchProcessQueue(jobDoc._id)
+
+    res.status(200).json({
+      message: 'Batch added for processing',
+      jobId: jobDoc._id
+    });
+
+  }
+  catch (error) {
+    console.error('Error sharing document via all channels:', error);
+    res.status(500).json({ message: 'Failed to share document via all channels' });
+  }
+}

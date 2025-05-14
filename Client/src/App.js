@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import DefaultLayout from './components/DefaultLayout';
 import Dashboard from './components/Dashboard';
 import UploadForm from './components/UploadForm';
@@ -16,10 +16,53 @@ import PDFUploadAndProcess from './components/PDFUploadAndProcess';
 import MessageEditor from './components/MessageEditor';
 import Profile from './components/Profile';
 import EmailStatus from './components/EmailStatus';
+import axios from 'axios';
+import { setUser } from './redux/userSlice';
+import { API_ENDPOINTS } from './config/apiEndpoints';
 
 function App() {
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
   const [messageTemplate, setMessageTemplate] = useState('');
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(true);
+
+
+  useEffect(() => {
+
+    async function getUser() {
+      try {
+
+        setLoading(()=>true);
+
+        const token = localStorage.getItem('token');
+        if (token) {
+          const { data: response } = await axios.post(API_ENDPOINTS.getUserProfile, {
+            token
+          })
+          dispatch(setUser({ name: response.data.name, role: response.data.role }));
+
+
+        } else {
+          localStorage.removeItem('token');
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        localStorage.removeItem('token');
+      }finally {
+        setLoading(false);
+      }
+    }
+    getUser();
+  }, [])
+
+
+  if(loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <h1>Loading...</h1>
+      </div>
+    )
+  }
 
   return (
     <Router>

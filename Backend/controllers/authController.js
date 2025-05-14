@@ -66,7 +66,8 @@ exports.login = async (req, res) => {
 		}
 
 		// Create and return JWT token
-		const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+		const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '365d' });
+
 
 		res.json({
 			token,
@@ -85,3 +86,26 @@ exports.login = async (req, res) => {
 		res.status(500).send('Server error');
 	}
 };
+
+exports.getUser = async (req, res) => {
+	try {
+		const jwtToken = req.body.token
+
+		const decoded = jwt.verify(jwtToken, process.env.JWT_SECRET);
+		const user = await User.findById(decoded.id).select('-password');
+		if (!user) {
+			return res.status(404).json({ message: 'User not found' });
+		}
+
+		res.status(200).json({
+			data : user,
+			message: 'User fetched successfully'
+		})
+
+	} catch (error) {
+		res.status(500).json({
+			message: 'Server error',
+			error: error.message
+		});
+	}
+}

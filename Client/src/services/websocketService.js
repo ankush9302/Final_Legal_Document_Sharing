@@ -2,6 +2,9 @@ class WebSocketService {
   constructor() {
     this.ws = null;
     this.subscribers = new Set();
+    this.jobStatusSubscibers = new Set();
+
+    this.connect();
   }
 
   connect() {
@@ -11,6 +14,10 @@ class WebSocketService {
       const message = JSON.parse(event.data);
       if (message.type === 'EMAIL_STATS_UPDATE') {
         this.notifySubscribers(message.data);
+      }
+
+      if(message.type === 'JOB_STATUS_UPDATE') {
+        this.notifyJobStatusSubscribers(message.data);
       }
     };
 
@@ -24,9 +31,17 @@ class WebSocketService {
     this.subscribers.add(callback);
     return () => this.subscribers.delete(callback);
   }
-
   notifySubscribers(data) {
     this.subscribers.forEach(callback => callback(data));
+  }
+
+  
+  subscribeJobStatus(callback) {
+    this.jobStatusSubscibers.add(callback);
+    return () => this.jobStatusSubscibers.delete(callback);
+  }
+  notifyJobStatusSubscribers(data) {
+    this.jobStatusSubscibers.forEach(callback => callback(data));
   }
 }
 

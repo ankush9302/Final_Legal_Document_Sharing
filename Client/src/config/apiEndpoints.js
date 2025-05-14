@@ -11,10 +11,11 @@ export const API_ENDPOINTS = {
     },
     login : `${BASE_URL}/api/auth/login`,
     register : `${BASE_URL}/api/auth/register`,
+    getUserProfile : `${BASE_URL}/api/auth/profile`,
     getReport(batchId) {
         return `${BASE_URL}/api/reports/${batchId}/getreport`;
     },
-
-
-
+    shareEntireBatch (batchId) {
+        return `${BASE_URL}/api/share/${batchId}/share-entire-batch`
+    },
 }
