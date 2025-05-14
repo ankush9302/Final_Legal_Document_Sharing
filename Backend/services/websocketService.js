@@ -55,7 +55,7 @@ class WebSocketService {
             client.send(JSON.stringify(message));
           }
         });
-        // console.log(job);  
+        console.log("Broadcasting job data");  
         
       } catch (error) {
         console.error('Error fetching/sending job data:', error.message);
