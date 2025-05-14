@@ -405,7 +405,7 @@ exports.shareEntireBatch = async (req, res) => {
     const jobDoc = new Job({
       batchId: batchId,
       subject: "Document of your Case shared by Legal Doc Sharing",
-      body: messageTemplate,
+      body: messageTemplate || "Here is your document from Legal Doc Sharing.",
       status: "queued",
       clientsTotal: clientsCount,
 
