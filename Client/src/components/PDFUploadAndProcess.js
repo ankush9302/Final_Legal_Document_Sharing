@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Upload, message, Button, Input } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
+import { API_ENDPOINTS } from '../config/apiEndpoints';
 
 const PDFUploadAndProcess = ({ messageTemplate }) => {
   const [pdfFile, setPdfFile] = useState(null);
@@ -24,7 +25,7 @@ const PDFUploadAndProcess = ({ messageTemplate }) => {
     setUploading(true);
 
     try {
-      await axios.post('/api/pdf-processing/upload', formData, {
+      await axios.post(API_ENDPOINTS.pdfProcess, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

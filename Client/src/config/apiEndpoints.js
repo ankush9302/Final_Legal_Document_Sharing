@@ -18,4 +18,5 @@ export const API_ENDPOINTS = {
     shareEntireBatch (batchId) {
         return `${BASE_URL}/api/share/${batchId}/share-entire-batch`
     },
+    pdfProcess : `${BASE_URL}/api/pdf-processing/upload`,
 }
